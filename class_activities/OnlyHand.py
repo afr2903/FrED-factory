@@ -32,6 +32,14 @@ with mp_hands.Hands(
                        mp_drawing.DrawingSpec(color=(250, 44, 250), thickness=2, circle_radius=2),)
                 
                 print(hand.landmark[mp_hands.HandLandmark.THUMB_TIP])
+
+                x1 = int(hand.landmark[mp_hands.HandLandmark.THUMB_TIP].x * width)
+                y1 = int(hand.landmark[mp_hands.HandLandmark.THUMB_TIP].y * height)
+                x2 = int(hand.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * width)
+                y2 = int(hand.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * height)
+                dist = ((x2-x1)**2 + (y2-y1)**2)**0.5
+                if dist < 50:
+                    
         
         
         cv2.imshow("Frame", frame)
