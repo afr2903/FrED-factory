@@ -17,13 +17,13 @@ const uint8_t MAX_PWM = 2500; // 2500 us
 const uint8_t BIG_GRIPPER_PWM = 2;
 const uint8_t SMALL_GRIPPER_PWM = 15;
 
-// Gripper struct to store the positions of the gripper
+// Gripper struct to store a configuration of the gripper
 struct Gripper {
     uint8_t big_position;
     uint8_t small_position;
 };
 
-// Gripper predefined positions
+// Gripper predefined positions array
 Gripper gripper_positions[] = {
     {120, 130},
     {100, 120},
@@ -38,7 +38,7 @@ Gripper gripper_positions[] = {
     {150, 130}
 };
 
-// Gripper states names
+// Enum to link Gripper states to a name
 enum GripperState {
     HOME = 0,
     PICK_ARDUINO = 1,
