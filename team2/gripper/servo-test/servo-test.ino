@@ -38,10 +38,12 @@
 
 #include <ESP32Servo.h>
 
-Servo myservo;  // create servo object to control a servo
+Servo small_gripper;  // create servo object to control a servo
+Servo big_gripper;
 // 16 servo objects can be created on the ESP32
 
-int pos = 0;    // variable to store the servo position
+int small_pos = 0;    // variable to store the servo position
+int big_pos = 0;
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33 
 // Possible PWM GPIO pins on the ESP32-S2: 0(used by on-board button),1-17,18(used by on-board LED),19-21,26,33-42
 // Possible PWM GPIO pins on the ESP32-S3: 0(used by on-board button),1-21,35-45,47,48(used by on-board LED)
@@ -51,7 +53,8 @@ int servoPin = 17;
 #elif defined(CONFIG_IDF_TARGET_ESP32C3)
 int servoPin = 7;
 #else
-int servoPin = 15;
+int smallPwm = 15;
+int bigPwm = 2;
 #endif
 
 void setup() {
@@ -60,8 +63,10 @@ void setup() {
 	ESP32PWM::allocateTimer(1);
 	ESP32PWM::allocateTimer(2);
 	ESP32PWM::allocateTimer(3);
-	myservo.setPeriodHertz(330);    // standard 50 hz servo
-	myservo.attach(servoPin, 500, 2500); // attaches the servo on pin 18 to the servo object
+	small_gripper.setPeriodHertz(330);    // standard 50 hz servo
+	small_gripper.attach(smallPwm, 500, 2500); // attaches the servo on pin 18 to the servo object
+	big_gripper.setPeriodHertz(330);    // standard 50 hz servo
+	big_gripper.attach(bigPwm, 500, 2500); // attaches the servo on pin 18 to the servo object
     Serial.begin(115200);
 	// using default min/max of 1000us and 2000us
 	// different servos may require different min/max settings
@@ -70,16 +75,29 @@ void setup() {
 
 void loop() {
 
-	for (pos = 140; pos >= 50; pos -= 1) { // goes from 180 degrees to 0 degrees
-		myservo.write(pos);    // tell servo to go to position in variable 'pos'
-        Serial.println(pos);
+	/*for (int i = 62; i >= 0; i -= 1) { // goes from 180 degrees to 0 degrees
+		small_pos = i;
+		small_gripper.write(small_pos);    // tell servo to go to position in variable 'pos'
+        Serial.println(small_pos);
 		delay(25);             // waits 15ms for the servo to reach the position
-	}
-	for (pos = 50; pos <= 140; pos += 1) { // goes from 0 degrees to 180 degrees
+	}*/
+
+	for (int i = 0; i <= 80; i += 1) { // goes from 0 degrees to 180 degrees
 		// in steps of 1 degree
-		myservo.write(pos);    // tell servo to go to position in variable 'pos'
-        Serial.println(pos);
+		small_pos = i;
+		if(i <= 62){
+			small_gripper.write(small_pos);    // tell servo to go to position in variable 'pos'
+			Serial.print("Small: ");
+        	Serial.print(small_pos);
+		}
+		big_pos = i + 90;
+		big_gripper.write(big_pos);    // tell servo to go to position in variable 'pos'
+		Serial.print(" Big: ");
+		Serial.println(big_pos);
 		delay(25);             // waits 15ms for the servo to reach the position
 	}
-    delay(1000); // wait a second before repeating
+	delay(1000);
+	small_gripper.write(0);
+	big_gripper.write(90);
+	delay(4000);
 }
