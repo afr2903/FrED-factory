@@ -53,8 +53,8 @@ int servoPin = 17;
 #elif defined(CONFIG_IDF_TARGET_ESP32C3)
 int servoPin = 7;
 #else
-int smallPwm = 15;
-int bigPwm = 2;
+int smallPwm = 13;
+int bigPwm = 12;
 #endif
 
 void setup() {
@@ -82,7 +82,7 @@ void loop() {
 		delay(25);             // waits 15ms for the servo to reach the position
 	}*/
 
-	for (int i = 0; i <= 80; i += 1) { // goes from 0 degrees to 180 degrees
+	/*for (int i = 0; i <= 90; i += 1) { // goes from 0 degrees to 180 degrees
 		// in steps of 1 degree
 		small_pos = i;
 		if(i <= 62){
@@ -90,14 +90,15 @@ void loop() {
 			Serial.print("Small: ");
         	Serial.print(small_pos);
 		}
-		big_pos = i + 90;
+		big_pos = i + 80;
 		big_gripper.write(big_pos);    // tell servo to go to position in variable 'pos'
 		Serial.print(" Big: ");
 		Serial.println(big_pos);
 		delay(25);             // waits 15ms for the servo to reach the position
 	}
-	delay(1000);
-	small_gripper.write(0);
-	big_gripper.write(90);
-	delay(4000);
+	delay(1000);*/
+	
+	small_gripper.write(20);
+	big_gripper.write(80);
+	delay(5000);
 }
