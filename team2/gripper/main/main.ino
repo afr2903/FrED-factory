@@ -1,97 +1,93 @@
 /*
-  Script to control the gripper of the robot sending predefined positions
+  Script to control the gripper of the robot receiving positions from Python script
   to the servo motors.
   ESP32Servo library is used to control the servo motors.
+  WiFi library is used to connect to the network.
   Author: afr2903
 */
 
+#include <WiFi.h>
+#include <WiFiUdp.h>
 #include <ESP32Servo.h>
 
-Servo big_gripper; // Servo object to control the servo for the big gripper
-Servo small_gripper; // Servo object to control the servo for the small gripper
+// Servo objects to control the grippers
+Servo wire_gripper; 
+Servo board_gripper;
 
-const uint8_t FREQUENCY = 330; // 330 Hz
-const uint8_t MIN_PWM = 500; // 500 us
-const uint8_t MAX_PWM = 2500; // 2500 us
+const int WIRE_PWM_PIN = 13;
+const int BOARD_PWM_PIN = 12;
 
-const uint8_t BIG_GRIPPER_PWM = 2;
-const uint8_t SMALL_GRIPPER_PWM = 15;
+// Network setup & credentials
+const char *ssid = "afr2903";
+const char *password = "12345678"; // Set password
+const int udpPort = 1234;
 
-// Gripper struct to store a configuration of the gripper
-struct Gripper {
-    uint8_t big_position;
-    uint8_t small_position;
-};
+WiFiUDP udp;
 
-// Gripper predefined positions array
-Gripper gripper_positions[] = {
-    {120, 130},
-    {100, 120},
-    {150, 110},
-    {110, 100},
-    {150, 90},
-    {90, 100},
-    {100, 60},
-    {110, 100},
-    {120, 60},
-    {110, 130},
-    {150, 130}
-};
+IPAddress staticIP(192, 168, 34, 23); // Set the desired static IP address
+IPAddress gateway(192, 168, 34, 1);   // Set the gateway of your network
+IPAddress subnet(255, 255, 255, 0);   // Set the subnet mask of your network
 
-// Enum to link Gripper states to a name
-enum GripperState {
-    HOME = 0,
-    PICK_ARDUINO = 1,
-    PLACE_ARDUINO = 2,
-    PICK_RAMPS = 3,
-    PLACE_RAMPS = 4,
-    PICK_DRIVER = 5,
-    PLACE_DRIVER = 6,
-    PICK_WIRE = 7,
-    PLACE_WIRE = 8,
-    PICK_ASSEMBLY = 9,
-    PLACE_ASSEMBLY = 10
-} current_state = HOME;
-
-GripperState target_state = HOME;
-
-void setup() {
+void setup(){
     Serial.begin(115200);
-	
-    // Allow allocation of all timers
-	ESP32PWM::allocateTimer(0);
-	ESP32PWM::allocateTimer(1);
-	ESP32PWM::allocateTimer(2);
-	ESP32PWM::allocateTimer(3);
 
-    // Big gripper servo intialization
-	big_gripper.setPeriodHertz(FREQUENCY);
-	big_gripper.attach(BIG_GRIPPER_PWM, MIN_PWM, MAX_PWM);
-    
-    // Small gripper servo intialization
-	small_gripper.setPeriodHertz(FREQUENCY);
-	small_gripper.attach(SMALL_GRIPPER_PWM, MIN_PWM, MAX_PWM);
-}
+    // WiFi connection
+    Serial.println();
+    WiFi.begin(ssid, password);
 
-void loop() {
-    if (current_state != target_state) {
-        current_state = target_state;
-        move_gripper();
+    while (WiFi.status() != WL_CONNECTED){
+        delay(1000);
+        Serial.println("Connecting to WiFi...");
     }
-    target_state = (GripperState) ((current_state + 1) % 3);
-    delay(5000);
+
+    Serial.println("Connected to WiFi");
+    WiFi.config(staticIP, gateway, subnet);
+
+    Serial.print("Current ip: ");
+    Serial.println(WiFi.localIP());
+
+    udp.begin(udpPort);
+    Serial.println("UDP server started");
+
+    // Servo setup
+    ESP32PWM::allocateTimer(0);
+    ESP32PWM::allocateTimer(1);
+    ESP32PWM::allocateTimer(2);
+    ESP32PWM::allocateTimer(3);
+    wire_gripper.setPeriodHertz(330);         // standard 50 hz servo
+    wire_gripper.attach(WIRE_PWM_PIN, 500, 2500); // attaches the servo on pin 18 to the servo object
+    board_gripper.setPeriodHertz(330);           // standard 50 hz servo
+    board_gripper.attach(BOARD_PWM_PIN, 500, 2500);     // attaches the servo on pin 18 to the servo object
 }
 
-void move_gripper(){
-    uint8_t target_big_position = gripper_positions[current_state].big_position;
-    uint8_t target_small_position = gripper_positions[current_state].small_position;
-    Serial.print("Current state: ");
-    Serial.print(current_state);
-    Serial.print(" Big gripper position: ");
-    Serial.print(target_big_position);
-    Serial.print(" Small gripper position: ");
-    Serial.println(target_small_position);
+void loop(){
+    int packetSize = udp.parsePacket(); // Receive UDP packet
+    if (packetSize){
+        char incoming_packet[255];
+        int len = udp.read(incoming_packet, 255);
+        bool board_requested = false;
+        if (len > 0){
+            if(incoming_packet[0] == 'b')
+                board_requested = true;
 
-    big_gripper.write(target_big_position);
-    small_gripper.write(target_small_position);
+            incoming_packet[len] = 0;
+            String message;
+            // Trim leading and trailing whitespaces
+            for (int i = 1; i < len; i++){
+                char letter = incoming_packet[i];
+                if (letter != ' ')
+                    message += letter;
+            }
+            int target_pos = message.toInt();
+            Serial.printf("UDP packet contents: %c%i\n", incoming_packet[0], target_pos);
+            Serial.println();
+
+            if (board_requested){
+                board_gripper.write(target_pos);
+            } else {
+                wire_gripper.write(target_pos);
+            }
+        }
+    }
+    delay(10);
 }
