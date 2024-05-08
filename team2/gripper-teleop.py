@@ -7,6 +7,11 @@ UDP_IP = "192.168.18.23"  # IP address of the ESP32
 UDP_PORT = 1234            # Port number
 MESSAGE = ""               # Initialize message
 
+WIRE_LOWER_LIMIT = 0;
+WIRE_UPPER_LIMIT = 70;
+BOARD_LOWER_LIMIT = 80;
+BOARD_UPPER_LIMIT = 170;
+
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 gui = Tk()
 
@@ -20,23 +25,23 @@ def send_data(position, board_gripper= False):
     
     print(f"Sending instruction: {data}")
     sock.sendto(data.encode(), (UDP_IP, UDP_PORT))
-    time.sleep(0.2)
+    time.sleep(0.1)
 
 if __name__ == '__main__':
     # Init GUI
     gui.title("Gripper Teleop")
-    gui.geometry("300x200")
+    gui.geometry("600x200")
 
     board_label = Label(gui, text="Board Gripper")
     board_label.pack()
 
-    board_slider = Scale(gui, from_=80, to=170, orient=HORIZONTAL, length=200, resolution=1)
+    board_slider = Scale(gui, from_=BOARD_LOWER_LIMIT, to=BOARD_UPPER_LIMIT, orient=HORIZONTAL, length=500, resolution=1)
     board_slider.pack()
 
     wire_label = Label(gui, text="Wire Gripper")
     wire_label.pack()
 
-    wire_slider = Scale(gui, from_=0, to=62, orient=HORIZONTAL, length=200, resolution=1)
+    wire_slider = Scale(gui, from_=WIRE_LOWER_LIMIT, to=WIRE_UPPER_LIMIT, orient=HORIZONTAL, length=500, resolution=1)
     wire_slider.pack()
 
     last_board_position = board_slider.get()
