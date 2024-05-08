@@ -3,7 +3,7 @@ import socket
 import time
 from tkinter import Tk, Scale, HORIZONTAL, Label, Button
 
-UDP_IP = "192.168.18.23"  # IP address of the ESP32
+UDP_IP = "192.168.34.23"  # IP address of the ESP32
 UDP_PORT = 1234            # Port number
 MESSAGE = ""               # Initialize message
 

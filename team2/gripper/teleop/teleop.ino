@@ -18,8 +18,8 @@ const int udpPort = 1234;
 
 WiFiUDP udp;
 
-IPAddress staticIP(192, 168, 18, 23); // Set the desired static IP address
-IPAddress gateway(192, 168, 18, 1);   // Set the gateway of your network
+IPAddress staticIP(192, 168, 34, 23); // Set the desired static IP address
+IPAddress gateway(192, 168, 34, 1);   // Set the gateway of your network
 IPAddress subnet(255, 255, 255, 0);   // Set the subnet mask of your network
 
 void setup(){
