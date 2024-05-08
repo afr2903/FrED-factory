@@ -2,14 +2,15 @@
 #include <WiFiUdp.h>
 #include <ESP32Servo.h>
 
-Servo small_gripper; // create servo object to control a servo
-Servo big_gripper;
+Servo wire_gripper; // create servo object to control a servo
+Servo board_gripper;
 
-int small_pos = 0; // variable to store the servo position
-int big_pos = 0;
+int wire_pos = 0; // variable to store the servo position
+int board_pos = 0;
 
-const int SMALL_PWM = 13;
-const int BIG_PWM = 12;
+const int WIRE_PWM = 13;
+const int BOARD_PWM = 12;
+
 
 const char *ssid = "afr2903";
 const char *password = "12345678"; // Set password
@@ -45,10 +46,10 @@ void setup(){
     ESP32PWM::allocateTimer(1);
     ESP32PWM::allocateTimer(2);
     ESP32PWM::allocateTimer(3);
-    small_gripper.setPeriodHertz(330);         // standard 50 hz servo
-    small_gripper.attach(smallPwm, 500, 2500); // attaches the servo on pin 18 to the servo object
-    big_gripper.setPeriodHertz(330);           // standard 50 hz servo
-    big_gripper.attach(bigPwm, 500, 2500);     // attaches the servo on pin 18 to the servo object
+    wire_gripper.setPeriodHertz(330);         // standard 50 hz servo
+    wire_gripper.attach(WIRE_PWM, 500, 2500); // attaches the servo on pin 18 to the servo object
+    board_gripper.setPeriodHertz(330);           // standard 50 hz servo
+    board_gripper.attach(BOARD_PWM, 500, 2500);     // attaches the servo on pin 18 to the servo object
 }
 
 void loop(){
@@ -57,10 +58,10 @@ void loop(){
         Serial.printf("Received %d bytes from %s, port %d\n", packetSize, udp.remoteIP().toString().c_str(), udp.remotePort());
         char incomingPacket[255];
         int len = udp.read(incomingPacket, 255);
-        bool big_requested = false;
+        bool board_requested = false;
         if (len > 0){
             if(incomingPacket[0] == 'b')
-                big_requested = true;
+                board_requested = true;
 
             incomingPacket[len] = 0;
             // Trim leading and trailing whitespaces
@@ -76,10 +77,11 @@ void loop(){
             int target_pos = message_completed.toInt();
             Serial.printf("UDP packet contents: %i\n", target_pos);
 
-            if (big_requested){
-                big_gripper.write(target_pos);
+            if (board_requested){
+                board_gripper.write(target_pos);
             } else {
-                small_gripper.write(target_pos);
+                wire_gripper.write(target_pos);
+            }
         }
     }
     delay(10);
