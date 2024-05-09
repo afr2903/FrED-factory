@@ -6,7 +6,7 @@ from xarm.wrapper import XArmAPI
 # IP addresses
 PLC_IP = '192.168.0.1'
 XARM_IP = '192.168.1.201'
-UDP_IP = "192.168.34.23"
+UDP_IP = "192.168.2.23"
 
 UDP_PORT = 1234            # Port number
 MESSAGE = ""               # Initialize message
@@ -17,7 +17,8 @@ class ElectronicsStation:
         # [board, wire]
         "HOME": [120, 40],
         "PICK_ARDUINO": [75, 40],
-        "PLACE_ARDUINO": [130, 40]
+        "PLACE_ARDUINO": [130, 40],
+        "PICK_WIRE": [130, 79]
     }
     ARM_STATES = {
         # [x, y, z, roll, pitch, yaw, speed]
@@ -57,7 +58,7 @@ class ElectronicsStation:
         self.sock.sendto(message.encode(), (UDP_IP, UDP_PORT))
         time.sleep(0.2)
 
-    def send_arm_state(self, state, lineal=True):
+    def send_arm_state(self, state, lineal=False):
         """Send the data to the xArm"""
         x, y, z, roll, pitch, yaw, speed = self.ARM_STATES[state]
         print(f"Sending arm to state: {state}")
@@ -69,36 +70,36 @@ class ElectronicsStation:
     def run(self):
         """Main loop of the electronics station"""
         if self.current_state == "HOME":
-            self.send_arm_state(self.current_state, lineal=False)
+            self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             self.current_state = "BEFORE_PICK_ARDUINO"
 
         elif self.current_state == "BEFORE_PICK_ARDUINO":
-            self.send_arm_state(self.current_state, lineal=False)
+            self.send_arm_state(self.current_state)
             self.current_state = "PICK_ARDUINO"
         
         elif self.current_state == "PICK_ARDUINO":
-            self.send_arm_state(self.current_state)
+            self.send_arm_state(self.current_state, lineal=True)
             self.send_gripper_state(self.current_state)
             time.sleep(1)
             self.current_state = "AFTER_PICK_ARDUINO"
 
         elif self.current_state == "AFTER_PICK_ARDUINO":
-            self.send_arm_state(self.current_state)
+            self.send_arm_state(self.current_state, lineal=True)
             self.current_state = "BEFORE_PLACE_ARDUINO"
 
         elif self.current_state == "BEFORE_PLACE_ARDUINO":
-            self.send_arm_state(self.current_state, lineal=False)
+            self.send_arm_state(self.current_state)
             self.current_state = "PLACE_ARDUINO"
         
         elif self.current_state == "PLACE_ARDUINO":
-            self.send_arm_state(self.current_state)
+            self.send_arm_state(self.current_state, lineal=True)
             self.send_gripper_state(self.current_state)
             time.sleep(1)
             self.current_state = "AFTER_PLACE_ARDUINO"
 
         elif self.current_state == "AFTER_PLACE_ARDUINO":
-            self.send_arm_state(self.current_state)
+            self.send_arm_state(self.current_state, lineal=True)
             self.current_state = "HOME"
 
         time.sleep(0.1)
