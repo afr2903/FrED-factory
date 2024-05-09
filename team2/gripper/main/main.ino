@@ -18,14 +18,14 @@ const int WIRE_PWM_PIN = 13;
 const int BOARD_PWM_PIN = 12;
 
 // Network setup & credentials
-const char *ssid = "afr2903";
-const char *password = "12345678"; // Set password
+const char *ssid = "RoboMaze";
+const char *password = "RoBorregos2024"; // Set password
 const int udpPort = 1234;
 
 WiFiUDP udp;
 
-IPAddress staticIP(192, 168, 34, 23); // Set the desired static IP address
-IPAddress gateway(192, 168, 34, 1);   // Set the gateway of your network
+IPAddress staticIP(192, 168, 2, 23); // Set the desired static IP address
+IPAddress gateway(192, 168, 2, 1);   // Set the gateway of your network
 IPAddress subnet(255, 255, 255, 0);   // Set the subnet mask of your network
 
 void setup(){
