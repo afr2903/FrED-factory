@@ -15,20 +15,20 @@ class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
-        "HOME": [120, 40],
-        "PICK_ARDUINO": [75, 40],
-        "PLACE_ARDUINO": [130, 40],
-        "PICK_WIRE": [130, 79]
+        "HOME": [85, 40],
+        "PICK_ARDUINO": [20, 40],
+        "PLACE_ARDUINO": [85, 40],
+        "PICK_WIRE": [85, 79]
     }
     ARM_STATES = {
         # [x, y, z, roll, pitch, yaw, speed]
         "HOME": [0, -70, -20, 0, 90, 0, 30],
-        "BEFORE_PICK_ARDUINO": [78.9, -5.4, -17, -5.8, -17, 82.1, 30],
-        "PICK_ARDUINO": [51.3, 427.3, 171.5, -143.1, -0.1, -5.7, 20],
-        "AFTER_PICK_ARDUINO": [44.6, 375.8, 240.8, -136.6, -0.1, -6.5, 30],
-        "BEFORE_PLACE_ARDUINO": [50, 12.5, -37.7, -2, 25.5, 52, 30],
-        "PLACE_ARDUINO": [260.3, 311.5, 129, 179.5, 1.2, 0.5, 30],
-        "AFTER_PLACE_ARDUINO": [260.3, 311.5, 145, 179.5, 1.2, 0.5, 30],
+        "BEFORE_PICK_ARDUINO": [84.4, -4.4, -17.2, -9.2, -19.4, 94.4, 30],
+        "PICK_ARDUINO": [11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 20],
+        "AFTER_PICK_ARDUINO": [17.6, 349.4, 241, -139.1, 0.2, -0.8, 30],
+        "BEFORE_PLACE_ARDUINO": [59.8, 0.8, -23.6, -8.9, 24.6, 68.8, 30],
+        "PLACE_ARDUINO": [166.3, 287.4, 124.2, 176.8, 0.3, 1.5, 20],
+        "AFTER_PLACE_ARDUINO": [166.3, 287.4, 145, 176.8, 0.3, 1.5, 20],
     }
     def __init__(self):
         """Initialize communications"""
