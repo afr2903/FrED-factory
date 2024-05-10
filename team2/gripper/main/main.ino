@@ -18,8 +18,8 @@ const int WIRE_PWM_PIN = 13;
 const int BOARD_PWM_PIN = 12;
 
 // Network setup & credentials
-const char *ssid = "RoboMaze";
-const char *password = "RoBorregos2024"; // Set password
+const char *ssid = "ESP32_AP";
+const char *password = "mit"; // Set password
 const int udpPort = 1234;
 
 WiFiUDP udp;
@@ -33,18 +33,12 @@ void setup(){
 
     // WiFi connection
     Serial.println();
-    WiFi.begin(ssid, password);
+    //WiFi.begin(ssid, password);
+    WiFi.softAPConfig(staticIP, gateway, subnet);
+    WiFi.softAP(ssid, password);
 
-    while (WiFi.status() != WL_CONNECTED){
-        delay(1000);
-        Serial.println("Connecting to WiFi...");
-    }
-
-    Serial.println("Connected to WiFi");
-    WiFi.config(staticIP, gateway, subnet);
-
-    Serial.print("Current ip: ");
-    Serial.println(WiFi.localIP());
+    Serial.print("Current IP: ");
+    Serial.println(WiFi.softAPIP());
 
     udp.begin(udpPort);
     Serial.println("UDP server started");
