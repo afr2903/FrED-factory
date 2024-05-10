@@ -10,7 +10,7 @@ For easier multiplatform environment setup, a python `venv` will be created. In 
 
 **Git** is required to collaborate and have the latest version of the code, install it from [here](https://git-scm.com/download/win). When the installer is opened, click `Next` for the default installation until it is finished.
 
-Then, open `PowerShell`, navigate to your preffered location with `cd` commands, and execute:
+Then, open `CMD` or `PowerShell`, navigate to your preffered location with `cd` commands, and execute:
 
 ```bash
 git clone https://github.com/afr2903/FrED-factory.git
@@ -27,7 +27,8 @@ git submodule update --recursive
 
 A virtual environment allows to work in an isolated Python environment:
 ```bash
-python -m venv fred-env
-.\fred-env\Scripts\Activate.ps1
+python -m venv fred-env # Create a virtual enviroment called "fred-env"
+.\fred-env\Scripts\Activate.ps1 # If in PowerShell
+.\fred-env\Scripts\activate.bat # If in CMD
 pip install -r requirements.txt
 ```
