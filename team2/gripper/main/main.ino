@@ -17,6 +17,12 @@ Servo board_gripper;
 const int WIRE_PWM_PIN = 13;
 const int BOARD_PWM_PIN = 12;
 
+// Servo values
+int wire_current_pos = 70;
+int board_current_pos = 70;
+int wire_target_pos = 70;
+int board_target_pos = 70;
+
 // Network setup & credentials
 const char *ssid = "ESP32_AP";
 const char *password = "mit"; // Set password
@@ -77,11 +83,22 @@ void loop(){
             Serial.println();
 
             if (board_requested){
-                board_gripper.write(target_pos);
+                board_target_pos = target_pos;
             } else {
-                wire_gripper.write(target_pos);
+                wire_target_pos = target_pos;
             }
         }
     }
+
+    // Set the current position to the target position with ramp
+    if (wire_current_pos != wire_target_pos){
+        wire_current_pos += wire_current_pos < wire_target_pos ? 1 : -1;
+        wire_gripper.write(wire_current_pos);
+    }
+    if (board_current_pos != board_target_pos){
+        board_current_pos += board_current_pos < board_target_pos ? 1 : -1;
+        board_gripper.write(board_current_pos);
+    }
+
     delay(10);
 }
