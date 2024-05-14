@@ -2,25 +2,36 @@
 import socket
 import time
 from xarm.wrapper import XArmAPI
+import os
+import sys
+import snap7
+from configparser import ConfigParser
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
+
 
 # IP addresses
-PLC_IP = '192.168.0.1'
+PLC_IP = '192.168.1.101'
 XARM_IP = '192.168.1.201'
 UDP_IP = "192.168.2.23"
 
 UDP_PORT = 1234            # Port number
 MESSAGE = ""               # Initialize message
 
+RACK = 0
+SLOT = 1
+plc = snap7.client.Client()
+
 class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
         "HOME": [85, 40],
-        "PICK_ARDUINO": [20, 40],
+        "PICK_ARDUINO": [18, 40],
         "PLACE_ARDUINO": [85, 40],
         "PICK_WIRE": [85, 79],
-        "PICK_SHIELD": [31, 40],
-        "PLACE_SHIELD":[85, 40]
+        "PICK_SHIELD": [30, 40],
+        "PLACE_SHIELD":[85, 40],
+        "FINISH_ROUTINE":[85, 40]
     }
     ARM_STATES = {
         # [x, y, z, roll, pitch, yaw, speed]
@@ -36,11 +47,17 @@ class ElectronicsStation:
         "AFTER_PICK_SHIELD":[-84.4, 372.6, 262.2, -141.1, -1.7, 4.1, 30], #LINEAR
         "BEFORE_PLACE_SHIELD":[48.6, -16.9, -8, -0.4, 26.3, 230.3, 30], #JOINT
         "PLACE_SHIELD":[166.3, 193.5, 130.1, 0.5, 179.4, -0.3, 20], #LINEAR
-        "AFTER_PLACE_SHIELD":[166.3, 192, 181.5, 0.2, 179.4, 0.7, 20] #LINEAR
+        "AFTER_PLACE_SHIELD":[166.3, 192, 181.5, 0.2, 179.4, 0.7, 20], #LINEAR
+        "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
 
     }
     def __init__(self):
         """Initialize communications"""
+        # PLC configs
+        self.plc = snap7.client.Client()
+        self.plc.connect(PLC_IP, RACK, SLOT)
+        self.plc_action_data = None
+       # self.plc_light_data = None
         # Arm configs
         self.arm = XArmAPI(XARM_IP, do_not_open=True)
         self.arm.register_error_warn_changed_callback(self.handle_err_warn_changed)
@@ -78,11 +95,21 @@ class ElectronicsStation:
 
     def run(self):
         """Main loop of the electronics station"""
-        if self.current_state == "HOME":
+        if self.current_state == "HOME": 
+           # self.plc_light_data = bytearray(0b00001000)
+            #self.plc.db_write(1,0, self.plc_light_data) 
+    
+            self.plc_action_data = self.plc.db_read(1, 0, 2)
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
-            self.current_state = "BEFORE_PICK_ARDUINO"
+            if self.plc_action_data[0] == 0b00000001:
+                time.sleep(2)
+                #self.plc_light_data = 0b00000001
+                #self.plc.db_write(1,0,self.plc_action_data)
+                self.current_state = "BEFORE_PICK_ARDUINO"
 
+    
+   
         elif self.current_state == "BEFORE_PICK_ARDUINO":
             self.send_arm_state(self.current_state)
             self.current_state = "PICK_ARDUINO"
@@ -137,7 +164,17 @@ class ElectronicsStation:
 
         elif self.current_state == "AFTER_PLACE_SHIELD":
             self.send_arm_state(self.current_state, lineal=True)
-            self.current_state = "HOME"
+            self.current_state = "FINISH_ROUTINE"
+
+        elif self.current_state == "FINISH_ROUTINE":
+            self.plc_action_data = self.plc.db_read(1, 0, 2) 
+            self.send_arm_state(self.current_state)
+            self.send_gripper_state(self.current_state)
+            if self.plc_action_data[0] == 0b00000000:
+                time.sleep(2)
+                self.current_state = "HOME"
+          
+
 
 
         time.sleep(0.1)
