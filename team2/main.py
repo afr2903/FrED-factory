@@ -29,7 +29,7 @@ class ElectronicsStation:
         "PICK_ARDUINO": [18, 40],
         "PLACE_ARDUINO": [85, 40],
         "PICK_WIRE": [85, 79],
-        "PICK_SHIELD": [30, 40],
+        "PICK_SHIELD": [41, 40],
         "PLACE_SHIELD":[85, 40],
         "FINISH_ROUTINE":[85, 40]
     }
@@ -45,9 +45,9 @@ class ElectronicsStation:
         "BEFORE_PICK_SHIELD":[117.4, 0.6, -37.5, 90.1, -13.6, 21.3, 30], #JOINT
         "PICK_SHIELD":[-94.3, 440.7, 183.9, -147.1, 0.9, -0.7, 20], #LINEAR
         "AFTER_PICK_SHIELD":[-84.4, 372.6, 262.2, -141.1, -1.7, 4.1, 30], #LINEAR
-        "BEFORE_PLACE_SHIELD":[48.6, -16.9, -8, -0.4, 26.3, 230.3, 30], #JOINT
-        "PLACE_SHIELD":[166.3, 193.5, 130.1, 0.5, 179.4, -0.3, 20], #LINEAR
-        "AFTER_PLACE_SHIELD":[166.3, 192, 181.5, 0.2, 179.4, 0.7, 20], #LINEAR
+        "BEFORE_PLACE_SHIELD":[49, -10.1, -7.5, 9.6, 16.5, 221.1, 30], #JOINT
+        "PLACE_SHIELD":[174.6, 189, 132.6, -2.1, -178.7, -4.3, 20], #LINEAR
+        "AFTER_PLACE_SHIELD":[174.6, 189, 157, -2.1, -178.7, -4.3, 20], #LINEAR
         "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
 
     }
