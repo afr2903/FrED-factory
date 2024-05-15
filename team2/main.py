@@ -2,16 +2,24 @@
 """
 Main script to run the electronics station assembly proccess
 """
+# Constants for features being used
+USE_PLC = False
+USE_SPEECH = False
+USE_ARM = True
+USE_GRIPPER = True
+
 # Libraries imports
 import socket
 import time
 from xarm.wrapper import XArmAPI
 import os
 import sys
-import snap7
-import pygame
 from configparser import ConfigParser
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
+if USE_PLC:
+    import snap7
+if USE_SPEECH:
+    import pygame
 
 # IP addresses
 PLC_IP = '192.168.1.101'
@@ -64,9 +72,10 @@ class ElectronicsStation:
     def __init__(self):
         """Initialize communications"""
         # PLC configs
-        self.plc = snap7.client.Client()
-        self.plc.connect(PLC_IP, RACK, SLOT)
-        self.plc_action_data = None
+        if USE_PLC:
+            self.plc = snap7.client.Client()
+            self.plc.connect(PLC_IP, RACK, SLOT)
+            self.plc_action_data = None
        # self.plc_light_data = None
 
         # Arm configs
@@ -79,14 +88,18 @@ class ElectronicsStation:
         self.arm.set_state(state=0)
 
         # Gripper configs
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        if USE_GRIPPER:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         # Speech feedback
-        pygame.mixer.init()
+        if USE_SPEECH:
+            pygame.mixer.init()
         self.current_state = "HOME"
 
     def send_gripper_state(self, state):
         """Send the data to the ESP32 via socket"""
+        if not USE_GRIPPER:
+            return
         board_position, wire_position = self.GRIPPER_STATES[state]
         print(f"Sending gripper to state: {state}")
         # Send board finger position
@@ -109,6 +122,8 @@ class ElectronicsStation:
     
     def static_speech_feedback(self, state):
         """Play the static audio files with feedback"""
+        if not USE_SPEECH:
+            return
         file_path = f"speech-feedback/{state}.opus"
         pygame.mixer.music.load(file_path)
         pygame.mixer.music.play()
@@ -120,16 +135,18 @@ class ElectronicsStation:
         if self.current_state == "HOME":
            # self.plc_light_data = bytearray(0b00001000)
             #self.plc.db_write(1,0, self.plc_light_data) 
-    
-            self.plc_action_data = self.plc.db_read(1, 0, 2)
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
+            if USE_PLC:    
+                self.current_state = "WAIT_SENSOR"
+            else:
+                self.current_state = "BEFORE_PICK_ARDUINO"
+
+        elif self.current_state == "WAIT_SENSOR":
+            self.plc_action_data = self.plc.db_read(1, 0, 2)
             if self.plc_action_data[0] == 0b00000001:
                 time.sleep(2)
-                #self.plc_light_data = 0b00000001
-                #self.plc.db_write(1,0,self.plc_action_data)
-                #self.current_state = "BEFORE_PICK_ARDUINO"
-                self.current_state = "BEFORE_PICK_SHIELD"
+                self.current_state = "BEFORE_PICK_ARDUINO"
    
         elif self.current_state == "BEFORE_PICK_ARDUINO":
             self.send_arm_state(self.current_state)
