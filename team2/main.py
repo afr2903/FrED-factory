@@ -54,10 +54,12 @@ class ElectronicsStation:
         "AFTER_PICK_SHIELD_1": [110.4, -6.9, -17.5, 35.8, -4.4, -108.4, 20], #JOINT
         "BEFORE_PLACE_SHIELD":[57.2, -5.9, -18.6, 3, 21.7, 52.8, 30], #JOINT
         "BEFORE_PLACE_SHIELD_1":[60.7, -0.1, -14.8, 6.1, 7.3, 53.7, 20], #JOINT
-        "PLACE_SHIELD": [156.2, 263.6, 141.3, -173.4, -1.4, -4.8, 15], #LINEAR
-        "AFTER_PLACE_SHIELD": [156.2, 263.6, 164.3, -173.4, -1.4, -4.8, 15], #LINEAR
+        #"PLACE_SHIELD": [156.9, 265.4, 147.1, -173.6, -1.6, -4.2, 15], #LINEAR
+        "BEFORE_PLACE_SHIELD_T":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
+        "PLACE_SHIELD": [59.1, -13.8, -17.1, 4.8, 21.5, 56.9, 15], #JOINT
+        "AFTER_PLACE_SHIELD": [60, -3.3, -15.9, 3.7, 13, 55.3, 15], #JOINT
+        "AFTER_PLACE_SHIELD_T":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
         "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
-
     }
     def __init__(self):
         """Initialize communications"""
@@ -126,7 +128,8 @@ class ElectronicsStation:
                 time.sleep(2)
                 #self.plc_light_data = 0b00000001
                 #self.plc.db_write(1,0,self.plc_action_data)
-                self.current_state = "BEFORE_PICK_ARDUINO"
+                #self.current_state = "BEFORE_PICK_ARDUINO"
+                self.current_state = "BEFORE_PICK_SHIELD"
    
         elif self.current_state == "BEFORE_PICK_ARDUINO":
             self.send_arm_state(self.current_state)
@@ -190,21 +193,33 @@ class ElectronicsStation:
         
         elif self.current_state == "AFTER_PICK_SHIELD_1":
             self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PLACE_SHIELD"
+            self.current_state = "BEFORE_PLACE_SHIELD_T"
 
         elif self.current_state == "BEFORE_PLACE_SHIELD":
+            self.send_arm_state(self.current_state)
+            self.current_state = "BEFORE_PLACE_SHIELD_1"
+        
+        elif self.current_state == "BEFORE_PLACE_SHIELD_1":
+            self.send_arm_state(self.current_state)
+            self.current_state = "PLACE_SHIELD"
+        
+        elif self.current_state == "BEFORE_PLACE_SHIELD_T":
             self.send_arm_state(self.current_state)
             self.current_state = "PLACE_SHIELD"
 
         elif self.current_state == "PLACE_SHIELD":
             self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state, lineal=True)
+            self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             time.sleep(1)
-            self.current_state = "AFTER_PLACE_SHIELD"
+            self.current_state = "AFTER_PLACE_SHIELD_T"
 
         elif self.current_state == "AFTER_PLACE_SHIELD":
-            self.send_arm_state(self.current_state, lineal=True)
+            self.send_arm_state(self.current_state)
+            self.current_state = "FINISH_ROUTINE"
+        
+        elif self.current_state == "AFTER_PLACE_SHIELD_T":
+            self.send_arm_state(self.current_state)
             self.current_state = "FINISH_ROUTINE"
 
         elif self.current_state == "FINISH_ROUTINE":
