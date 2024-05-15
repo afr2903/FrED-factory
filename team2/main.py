@@ -50,9 +50,11 @@ class ElectronicsStation:
         "BEFORE_PICK_ARDUINO": [84.4, -4.4, -17.2, -9.2, -19.4, 94.4, 30], #JOINT
         "PICK_ARDUINO": [11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 20], #LINEAR
         "AFTER_PICK_ARDUINO": [17.6, 349.4, 241, -139.1, 0.2, -0.8, 30], #LINEAR
-        "BEFORE_PLACE_ARDUINO": [59.8, 0.8, -23.6, -8.9, 24.6, 68.8, 30], #JOINT
-        "PLACE_ARDUINO": [166.3, 287.4, 124.2, 176.8, 0.3, 1.5, 20], #LINEAR
-        "AFTER_PLACE_ARDUINO": [166.3, 287.4, 165, 176.8, 0.3, 1.5, 20], #LINEAR
+        "BEFORE_PLACE_ARDUINO": [60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 30], #JOINT
+        "SAFE_PLACE_ARDUINO": [59.7, -11, -24.9, 0.4, 37.3, 63.1, 15], #JOINT
+        "PLACE_ARDUINO": [60, -7.8, -23.8, 0.4, 32.3, 61.4, 15], #JOINT
+        #"PLACE_ARDUINO": [169.3, 290, 205.2, 178.9, -5.7, -1.3, 15], #LINEAR
+        "AFTER_PLACE_ARDUINO": [60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 30], #JOINT
         "BEFORE_PICK_SHIELD":[111.5, 1.8, -17, 23.6, -14.9, -92.3, 30], #JOINT
         "BEFORE_PICK_SHIELD_2": [107.7, 9.5, -26.5, 23.5, -7.9, -95.3, 20], #JOINT
         "PICK_SHIELD": [-86.7, 372.2, 146.1, 0.8, -172.9, -45.6, 15], #LINEAR
@@ -64,7 +66,7 @@ class ElectronicsStation:
         "BEFORE_PLACE_SHIELD_1":[60.7, -0.1, -14.8, 6.1, 7.3, 53.7, 20], #JOINT
         #"PLACE_SHIELD": [156.9, 265.4, 147.1, -173.6, -1.6, -4.2, 15], #LINEAR
         "BEFORE_PLACE_SHIELD_T":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
-        "PLACE_SHIELD": [59.1, -13.8, -17.1, 4.8, 21.5, 56.9, 15], #JOINT
+        "PLACE_SHIELD": [59.9, -15.9, -15.3, 5.9, 22.3, 54.4    , 15], #JOINT
         "AFTER_PLACE_SHIELD": [60, -3.3, -15.9, 3.7, 13, 55.3, 15], #JOINT
         "AFTER_PLACE_SHIELD_T":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
         "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
@@ -165,17 +167,21 @@ class ElectronicsStation:
 
         elif self.current_state == "BEFORE_PLACE_ARDUINO":
             self.send_arm_state(self.current_state)
+            self.current_state = "SAFE_PLACE_ARDUINO"
+        
+        elif self.current_state == "SAFE_PLACE_ARDUINO":
+            self.send_arm_state(self.current_state)
             self.current_state = "PLACE_ARDUINO"
         
         elif self.current_state == "PLACE_ARDUINO":
             self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state, lineal=True)
+            self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             time.sleep(1)
             self.current_state = "AFTER_PLACE_ARDUINO"
 
         elif self.current_state == "AFTER_PLACE_ARDUINO":
-            self.send_arm_state(self.current_state, lineal=True)
+            self.send_arm_state(self.current_state)
             self.current_state = "BEFORE_PICK_SHIELD"
 
         elif self.current_state == "BEFORE_PICK_SHIELD":
@@ -237,7 +243,7 @@ class ElectronicsStation:
         
         elif self.current_state == "AFTER_PLACE_SHIELD_T":
             self.send_arm_state(self.current_state)
-            self.current_state = "FINISH_ROUTINE"
+            self.current_state = "HOME"
 
         elif self.current_state == "FINISH_ROUTINE":
             self.plc_action_data = self.plc.db_read(1, 0, 2)
