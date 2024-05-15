@@ -66,9 +66,19 @@ class ElectronicsStation:
         "BEFORE_PLACE_SHIELD_1":[60.7, -0.1, -14.8, 6.1, 7.3, 53.7, 20], #JOINT
         #"PLACE_SHIELD": [156.9, 265.4, 147.1, -173.6, -1.6, -4.2, 15], #LINEAR
         "BEFORE_PLACE_SHIELD_T":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
-        "PLACE_SHIELD": [59.9, -15.9, -15.3, 5.9, 22.3, 54.4    , 15], #JOINT
-        "AFTER_PLACE_SHIELD": [60, -3.3, -15.9, 3.7, 13, 55.3, 15], #JOINT
-        "AFTER_PLACE_SHIELD_T":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
+        "SAFE_PLACE_SHIELD": [59, -17.9, -18.7, 5.3, 32.1, 54, 15], #JOINT
+        "PLACE_SHIELD": [59.7, -16.5, -14.8, 10.4, 21.9, 51.5, 5], #JOINT
+        "AFTER_PLACE_SHIELD": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
+        "PUSH_SHIELD": [57.2, -13.6, -16.5, 3.2, 31.2, 52.7, 15], #JOINT
+        "AFTER_PUSH_SHIELD": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
+        "PUSH_SHIELD_1": [57.9, -12, -17.9, 2.3, 32.7, 53.6, 45], #JOINT
+        "AFTER_PUSH_SHIELD_1": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
+        "PUSH_SHIELD_2": [56.1, -13.5, -14, 2.2, 28.8, 53.6, 45], #JOINT
+        "AFTER_PUSH_SHIELD_2": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
+        "PUSH_SHIELD_3": [57.9, -12, -17.9, 2.3, 32.7, 53.6, 45], #JOINT
+        "AFTER_PUSH_SHIELD_3": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
+        "PUSH_SHIELD_4": [56.1, -13.5, -14, 2.2, 28.8, 53.6, 45], #JOINT
+        "AFTER_PUSH_SHIELD_4": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
         "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
     }
     def __init__(self):
@@ -139,7 +149,7 @@ class ElectronicsStation:
             #self.plc.db_write(1,0, self.plc_light_data) 
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
-            if USE_PLC:    
+            if USE_PLC:
                 self.current_state = "WAIT_SENSOR"
             else:
                 self.current_state = "BEFORE_PICK_ARDUINO"
@@ -228,6 +238,10 @@ class ElectronicsStation:
         
         elif self.current_state == "BEFORE_PLACE_SHIELD_T":
             self.send_arm_state(self.current_state)
+            self.current_state = "SAFE_PLACE_SHIELD"
+        
+        elif self.current_state == "SAFE_PLACE_SHIELD":
+            self.send_arm_state(self.current_state)
             self.current_state = "PLACE_SHIELD"
 
         elif self.current_state == "PLACE_SHIELD":
@@ -235,16 +249,52 @@ class ElectronicsStation:
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             time.sleep(1)
-            self.current_state = "AFTER_PLACE_SHIELD_T"
+            self.current_state = "AFTER_PLACE_SHIELD"
 
         elif self.current_state == "AFTER_PLACE_SHIELD":
             self.send_arm_state(self.current_state)
-            self.current_state = "FINISH_ROUTINE"
+            self.current_state = "PUSH_SHIELD"
         
-        elif self.current_state == "AFTER_PLACE_SHIELD_T":
+        elif self.current_state == "PUSH_SHIELD":
+            self.send_arm_state(self.current_state)
+            self.current_state = "AFTER_PUSH_SHIELD"
+        
+        elif self.current_state == "AFTER_PUSH_SHIELD":
+            self.send_arm_state(self.current_state)
+            self.current_state = "PUSH_SHIELD_1"
+        
+        elif self.current_state == "PUSH_SHIELD_1":
+            self.send_arm_state(self.current_state)
+            self.current_state = "AFTER_PUSH_SHIELD_1"
+        
+        elif self.current_state == "AFTER_PUSH_SHIELD_1":
+            self.send_arm_state(self.current_state)
+            self.current_state = "PUSH_SHIELD_2"
+        
+        elif self.current_state == "PUSH_SHIELD_2":
+            self.send_arm_state(self.current_state)
+            self.current_state = "AFTER_PUSH_SHIELD_2"
+        
+        elif self.current_state == "AFTER_PUSH_SHIELD_2":
+            self.send_arm_state(self.current_state)
+            self.current_state = "PUSH_SHIELD_3"
+        
+        elif self.current_state == "PUSH_SHIELD_3":
+            self.send_arm_state(self.current_state)
+            self.current_state = "AFTER_PUSH_SHIELD_3"
+        
+        elif self.current_state == "AFTER_PUSH_SHIELD_3":
             self.send_arm_state(self.current_state)
             self.current_state = "HOME"
-
+        
+        elif self.current_state == "PUSH_SHIELD_4":
+            self.send_arm_state(self.current_state)
+            self.current_state = "AFTER_PUSH_SHIELD_4"
+        
+        elif self.current_state == "AFTER_PUSH_SHIELD_4":
+            self.send_arm_state(self.current_state)
+            self.current_state = "HOME"
+        
         elif self.current_state == "FINISH_ROUTINE":
             self.plc_action_data = self.plc.db_read(1, 0, 2)
             self.send_arm_state(self.current_state)
