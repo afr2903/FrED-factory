@@ -101,9 +101,13 @@ class ElectronicsStation:
         "PLACE_DRIVER2": [70.5, 16, -58.7, -24.5, 124.1, 67.6, 5], #JOINT
         "AFTER_PLACE_DRIVER2": [70.4, 15.9, -59.6, -25.5, 127.7, 67.7, 15], #JOINT
         "AFTER_PLACE_DRIVER2_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
-        "BEFORE_PUSH_DRIVERS": [57.3, -32, -18.2, 2.1, 45, 54.5, 30], #JOINT
-        "SAFE_PUSH_DRIVERS": [57.3, -32, -18.2, 2.1, 45, 54.5, 30], #JOINT
-        "PUSH_DRIVERS": [56.4, -32, -18.2, 2.1, 45, 54.5, 30], #JOINT
+        "BEFORE_PUSH_DRIVERS": [57.3, -32, -18.2, 2.1, 45, 54.5, 20], #JOINT
+        "SAFE_PUSH_DRIVERS": [56.9, -17.3, -18.5, 2.1, 31.3, 54.5, 10], #JOINT
+        "PUSH_DRIVERS": [56.4, -13, -17.3, 2.1, 30.2, 54.5, 45], #JOINT
+        "AFTER_PUSH_DRIVERS": [56.9, -17.3, -18.5, 2.1, 31.3, 54.5, 15], #JOINT
+        "PUSH_DRIVERS_2": [56.4, -13, -17.3, 2.1, 30.2, 54.5, 45], #JOINT
+        "AFTER_PUSH_DRIVERS_2": [56.9, -17.3, -18.5, 2.1, 31.3, 54.5, 15], #JOINT
+        "BEFORE_PICK_WIRE1": [57.3, -32, -18.2, 2.1, 45, 54.5, 20], #JOINT
         "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
     }
     def __init__(self):
@@ -402,6 +406,34 @@ class ElectronicsStation:
             self.current_state = "AFTER_PLACE_DRIVER2_2"
 
         elif self.current_state == "AFTER_PLACE_DRIVER2_2":
+            self.send_arm_state(self.current_state)
+            self.current_state = "BEFORE_PUSH_DRIVERS"
+        
+        elif self.current_state == "BEFORE_PUSH_DRIVERS":
+            self.send_arm_state(self.current_state)
+            self.current_state = "SAFE_PUSH_DRIVERS"
+        
+        elif self.current_state == "SAFE_PUSH_DRIVERS":
+            self.send_arm_state(self.current_state)
+            self.current_state = "PUSH_DRIVERS"
+
+        elif self.current_state == "PUSH_DRIVERS":
+            self.send_arm_state(self.current_state)
+            self.current_state = "AFTER_PUSH_DRIVERS"
+        
+        elif self.current_state == "AFTER_PUSH_DRIVERS":
+            self.send_arm_state(self.current_state)
+            self.current_state = "PUSH_DRIVERS_2"
+        
+        elif self.current_state == "PUSH_DRIVERS_2":
+            self.send_arm_state(self.current_state)
+            self.current_state = "AFTER_PUSH_DRIVERS_2"
+        
+        elif self.current_state == "AFTER_PUSH_DRIVERS_2":
+            self.send_arm_state(self.current_state)
+            self.current_state = "BEFORE_PICK_WIRE1"
+        
+        elif self.current_state == "BEFORE_PICK_WIRE1":
             self.send_arm_state(self.current_state)
             self.current_state = "HOME"
 
