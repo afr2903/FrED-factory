@@ -4,7 +4,7 @@ Main script to run the electronics station assembly proccess
 """
 # Constants for features being used
 USE_PLC = False
-USE_SPEECH = False
+USE_SPEECH = True
 USE_ARM = True
 USE_GRIPPER = True
 
@@ -181,8 +181,8 @@ class ElectronicsStation:
             if USE_PLC:
                 self.current_state = "WAIT_SENSOR"
             else:
-                #self.current_state = "BEFORE_PICK_ARDUINO"
-                self.current_state = "BEFORE_PICK_DRIVER1"
+                self.current_state = "BEFORE_PICK_ARDUINO"
+                #self.current_state = "BEFORE_PICK_DRIVER1"
 
         elif self.current_state == "WAIT_SENSOR":
             self.plc_action_data = self.plc.db_read(1, 0, 2)
@@ -286,6 +286,7 @@ class ElectronicsStation:
             self.current_state = "PUSH_SHIELD"
         
         elif self.current_state == "PUSH_SHIELD":
+            self.static_speech_feedback(self.current_state)
             self.send_arm_state(self.current_state)
             self.current_state = "AFTER_PUSH_SHIELD"
         
@@ -315,7 +316,7 @@ class ElectronicsStation:
         
         elif self.current_state == "AFTER_PUSH_SHIELD_3":
             self.send_arm_state(self.current_state)
-            self.current_state = "HOME"
+            self.current_state = "BEFORE_PICK_DRIVER1"
         
         elif self.current_state == "PUSH_SHIELD_4":
             self.send_arm_state(self.current_state)
@@ -418,6 +419,7 @@ class ElectronicsStation:
             self.current_state = "PUSH_DRIVERS"
 
         elif self.current_state == "PUSH_DRIVERS":
+            self.static_speech_feedback(self.current_state)
             self.send_arm_state(self.current_state)
             self.current_state = "AFTER_PUSH_DRIVERS"
         
