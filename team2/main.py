@@ -37,9 +37,9 @@ class ElectronicsStation:
     GRIPPER_STATES = {
         # [board, wire]
         "HOME": [85, 0],
-        "PICK_ARDUINO": [18, 0],
+        "PICK_ARDUINO": [15, 0],
         "PLACE_ARDUINO": [85, 0],
-        "PICK_SHIELD": [37, 0],
+        "PICK_SHIELD": [30, 0],
         "PLACE_SHIELD":[85, 0],
         "PUSH_SHIELD": [85, 0],
         "PICK_DRIVER1": [85, 40],
@@ -73,28 +73,28 @@ class ElectronicsStation:
         #"PLACE_SHIELD": [156.9, 265.4, 147.1, -173.6, -1.6, -4.2, 15], #LINEAR
         "BEFORE_PLACE_SHIELD":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 30], #JOINT
         "SAFE_PLACE_SHIELD": [59, -17.9, -18.7, 5.3, 32.1, 54, 15], #JOINT
-        "PLACE_SHIELD": [59, -14.8, -16.8, 12.1, 24.6, 48.5, 5], #JOINT
+        "PLACE_SHIELD": [59.6, -13.8, -18.7, 6.8, 28.2, 52.3, 5], #JOINT
         "AFTER_PLACE_SHIELD": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
-        "PUSH_SHIELD": [57.2, -13.6, -16.5, 3.2, 31.2, 52.7, 15], #JOINT
-        "AFTER_PUSH_SHIELD": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
-        "PUSH_SHIELD_1": [57.9, -12, -17.9, 2.3, 32.7, 53.6, 45], #JOINT
-        "AFTER_PUSH_SHIELD_1": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
-        "PUSH_SHIELD_2": [56.1, -13.5, -14, 2.2, 28.8, 53.6, 45], #JOINT
-        "AFTER_PUSH_SHIELD_2": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
-        "PUSH_SHIELD_3": [57.9, -12, -17.9, 2.3, 32.7, 53.6, 45], #JOINT
-        "AFTER_PUSH_SHIELD_3": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
+        "PUSH_SHIELD": [55.7, -13.5, -16.5, 0.5, 34.4, 53.3, 45], #JOINT
+        "AFTER_PUSH_SHIELD": [55.7, -19.9, -16.5, 0.5, 34.4, 53.3, 15], #JOINT
+        "PUSH_SHIELD_1": [55.7, -18, -11, 2.9, 28.9, 52.9, 45], #JOINT
+        "AFTER_PUSH_SHIELD_1": [55.7, -22, -11, 2.9, 28.9, 52.9, 45], #JOINT
+        "PUSH_SHIELD_2": [55.7, -13.5, -16.5, 0.5, 34.4, 53.3, 45], #JOINT
+        "AFTER_PUSH_SHIELD_2": [55.7, -19.9, -16.5, 0.5, 34.4, 53.3, 15], #JOINT
+        "PUSH_SHIELD_3": [55.7, -18, -11, 2.9, 28.9, 52.9, 45], #JOINT
+        "AFTER_PUSH_SHIELD_3": [55.7, -22, -11, 2.9, 28.9, 52.9, 45], #JOINT
         "BEFORE_PICK_DRIVER1": [57.3, -32, -18.2, 2.1, 45, 54.5, 30], #JOINT
         "BEFORE_PICK_DRIVER1_2": [62.9, 25.2, -86.5, -1.6, 64.8, 64.1, 20], #JOINT
         "BEFORE_PICK_DRIVER1_3": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
-        "PICK_DRIVER1": [67.5, 54.1, -111.3, -23.2, 115.2, 65.4, 5], #JOINT
+        "PICK_DRIVER1": [67.7, 53.6, -111.5, -23.3, 117, 65.6, 5], #JOINT
         "AFTER_PICK_DRIVER1": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
         "AFTER_PICK_DRIVER1_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
-        "BEFORE_PLACE_DRIVER1": [72.3, 25.5, -69.9, -26, 134.6, 63.5, 15], #JOINT
+        "BEFORE_PLACE_DRIVER1": [72.3, 25.4, -70.2, -26.1, 134.6, 65.9, 15], #JOINT
         "PLACE_DRIVER1": [71.4, 21.9, -65.7, -25.8, 127.8, 63.4, 5], #JOINT
         "AFTER_PLACE_DRIVER1": [72.3, 25.5, -69.9, -26, 134.6, 63.5, 15], #JOINT
         "AFTER_PLACE_DRIVER1_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
         "BEFORE_PICK_DRIVER2": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
-        "PICK_DRIVER2": [67.5, 54.1, -111.3, -23.2, 115.2, 65.4, 5], #JOINT
+        "PICK_DRIVER2": [67.7, 53.6, -111.5, -23.3, 117, 65.6, 5], #JOINT
         "AFTER_PICK_DRIVER2": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
         "AFTER_PICK_DRIVER2_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
         "BEFORE_PLACE_DRIVER2": [70.4, 15.9, -59.6, -25.5, 127.7, 67.7, 15], #JOINT
@@ -239,7 +239,10 @@ class ElectronicsStation:
     def handle_err_warn_changed(self, item):
         """Handle error and warning messages"""
         print('ErrorCode: {}, WarnCode: {}'.format(item['error_code'], item['warn_code']))
-        sys.exit()
+        if item['error_code'] != 0:
+            print("f")
+            self.arm.disconnect()
+            sys.exit()
 
     def close(self):
         """Close all connections"""
