@@ -4,7 +4,7 @@ Main script to run the electronics station assembly proccess
 """
 # Constants for features being used
 USE_PLC = False
-USE_SPEECH = True
+USE_SPEECH = False
 USE_ARM = True
 USE_GRIPPER = True
 
@@ -53,15 +53,15 @@ class ElectronicsStation:
     ARM_STATES = {
         # [x, y, z, roll, pitch, yaw, speed]
         "HOME": [0, -70, -20, 0, 90, 0, 30], #JOINT
-        "BEFORE_PICK_ARDUINO": [84.4, -4.4, -17.2, -9.2, -19.4, 94.4, 30], #JOINT
-        "PICK_ARDUINO": [11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 20], #LINEAR
-        "AFTER_PICK_ARDUINO": [17.6, 349.4, 241, -139.1, 0.2, -0.8, 30], #LINEAR
-        "BEFORE_PLACE_ARDUINO": [60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 30], #JOINT
-        "SAFE_PLACE_ARDUINO": [59.7, -11, -24.9, 0.4, 37.3, 63.1, 15], #JOINT
+        "BEFORE_PICK_ARDUINO": [84.4, -4.4, -17.2, -9.2, -19.4, 94.4, 40], #JOINT
+        "PICK_ARDUINO": [11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 30], #LINEAR
+        "AFTER_PICK_ARDUINO": [17.6, 349.4, 241, -139.1, 0.2, -0.8, 40], #LINEAR
+        "BEFORE_PLACE_ARDUINO": [60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 50], #JOINT
+        "SAFE_PLACE_ARDUINO": [59.7, -11, -24.9, 0.4, 37.3, 63.1, 35], #JOINT
         "PLACE_ARDUINO": [60, -7.8, -23.8, 0.4, 32.3, 61.4, 15], #JOINT
         #"PLACE_ARDUINO": [169.3, 290, 205.2, 178.9, -5.7, -1.3, 15], #LINEAR
         "AFTER_PLACE_ARDUINO": [60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 30], #JOINT
-        "BEFORE_PICK_SHIELD":[111.5, 1.8, -17, 23.6, -14.9, -92.3, 30], #JOINT
+        "BEFORE_PICK_SHIELD":[111.5, 1.8, -17, 23.6, -14.9, -92.3, 40], #JOINT
         "BEFORE_PICK_SHIELD_2": [107.7, 9.5, -26.5, 23.5, -7.9, -95.3, 20], #JOINT
         #"PICK_SHIELD": [-86.7, 372.2, 146.1, 0.8, -172.9, -45.6, 15], #LINEAR
         "PICK_SHIELD_0": [109.7, 12.1, -29.4, 35.8, -5.9, -108.1, 15], #JOINT
@@ -71,9 +71,9 @@ class ElectronicsStation:
         #"BEFORE_PLACE_SHIELD":[57.2, -5.9, -18.6, 3, 21.7, 52.8, 30], #JOINT
         #"BEFORE_PLACE_SHIELD_1":[60.7, -0.1, -14.8, 6.1, 7.3, 53.7, 20], #JOINT
         #"PLACE_SHIELD": [156.9, 265.4, 147.1, -173.6, -1.6, -4.2, 15], #LINEAR
-        "BEFORE_PLACE_SHIELD":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
+        "BEFORE_PLACE_SHIELD":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 30], #JOINT
         "SAFE_PLACE_SHIELD": [59, -17.9, -18.7, 5.3, 32.1, 54, 15], #JOINT
-        "PLACE_SHIELD": [59.7, -16.5, -14.8, 10.4, 21.9, 51.5, 5], #JOINT
+        "PLACE_SHIELD": [59, -14.8, -16.8, 12.1, 24.6, 48.5, 5], #JOINT
         "AFTER_PLACE_SHIELD": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
         "PUSH_SHIELD": [57.2, -13.6, -16.5, 3.2, 31.2, 52.7, 15], #JOINT
         "AFTER_PUSH_SHIELD": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
@@ -239,6 +239,7 @@ class ElectronicsStation:
     def handle_err_warn_changed(self, item):
         """Handle error and warning messages"""
         print('ErrorCode: {}, WarnCode: {}'.format(item['error_code'], item['warn_code']))
+        sys.exit()
 
     def close(self):
         """Close all connections"""
