@@ -39,13 +39,15 @@ class ElectronicsStation:
         "HOME": [85, 0],
         "PICK_ARDUINO": [18, 0],
         "PLACE_ARDUINO": [85, 0],
-        "PICK_WIRE": [85, 79],
         "PICK_SHIELD": [37, 0],
         "PLACE_SHIELD":[85, 0],
+        "PUSH_SHIELD": [85, 0],
         "PICK_DRIVER1": [85, 40],
         "PLACE_DRIVER1": [85, 0],
         "PICK_DRIVER2": [85, 40],
         "PLACE_DRIVER2": [85, 0],
+        "PUSH_DRIVERS": [85, 40],
+        "PICK_WIRE": [85, 79],
         "FINISH_ROUTINE":[85, 40]
     }
     ARM_STATES = {
@@ -61,15 +63,15 @@ class ElectronicsStation:
         "AFTER_PLACE_ARDUINO": [60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 30], #JOINT
         "BEFORE_PICK_SHIELD":[111.5, 1.8, -17, 23.6, -14.9, -92.3, 30], #JOINT
         "BEFORE_PICK_SHIELD_2": [107.7, 9.5, -26.5, 23.5, -7.9, -95.3, 20], #JOINT
-        "PICK_SHIELD": [-86.7, 372.2, 146.1, 0.8, -172.9, -45.6, 15], #LINEAR
+        #"PICK_SHIELD": [-86.7, 372.2, 146.1, 0.8, -172.9, -45.6, 15], #LINEAR
         "PICK_SHIELD_0": [109.7, 12.1, -29.4, 35.8, -5.9, -108.1, 15], #JOINT
-        "PICK_SHIELD_1": [111.4, 17.9, -30.3, 35.8, -16.6, -108.1, 15], #JOINT
+        "PICK_SHIELD": [111.4, 17.9, -30.3, 35.8, -16.6, -108.1, 15], #JOINT
         "AFTER_PICK_SHIELD": [111.6, 13.4, -27.4, 35.8, -16.6, -108.2, 15], #JOINT
         "AFTER_PICK_SHIELD_1": [110.4, -6.9, -17.5, 35.8, -4.4, -108.4, 20], #JOINT
-        "BEFORE_PLACE_SHIELD":[57.2, -5.9, -18.6, 3, 21.7, 52.8, 30], #JOINT
-        "BEFORE_PLACE_SHIELD_1":[60.7, -0.1, -14.8, 6.1, 7.3, 53.7, 20], #JOINT
+        #"BEFORE_PLACE_SHIELD":[57.2, -5.9, -18.6, 3, 21.7, 52.8, 30], #JOINT
+        #"BEFORE_PLACE_SHIELD_1":[60.7, -0.1, -14.8, 6.1, 7.3, 53.7, 20], #JOINT
         #"PLACE_SHIELD": [156.9, 265.4, 147.1, -173.6, -1.6, -4.2, 15], #LINEAR
-        "BEFORE_PLACE_SHIELD_T":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
+        "BEFORE_PLACE_SHIELD":[55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 20], #JOINT
         "SAFE_PLACE_SHIELD": [59, -17.9, -18.7, 5.3, 32.1, 54, 15], #JOINT
         "PLACE_SHIELD": [59.7, -16.5, -14.8, 10.4, 21.9, 51.5, 5], #JOINT
         "AFTER_PLACE_SHIELD": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
@@ -81,8 +83,6 @@ class ElectronicsStation:
         "AFTER_PUSH_SHIELD_2": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
         "PUSH_SHIELD_3": [57.9, -12, -17.9, 2.3, 32.7, 53.6, 45], #JOINT
         "AFTER_PUSH_SHIELD_3": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
-        "PUSH_SHIELD_4": [56.1, -13.5, -14, 2.2, 28.8, 53.6, 45], #JOINT
-        "AFTER_PUSH_SHIELD_4": [57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15], #JOINT
         "BEFORE_PICK_DRIVER1": [57.3, -32, -18.2, 2.1, 45, 54.5, 30], #JOINT
         "BEFORE_PICK_DRIVER1_2": [62.9, 25.2, -86.5, -1.6, 64.8, 64.1, 20], #JOINT
         "BEFORE_PICK_DRIVER1_3": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
@@ -108,6 +108,7 @@ class ElectronicsStation:
         "PUSH_DRIVERS_2": [56.4, -13, -17.3, 2.1, 30.2, 54.5, 45], #JOINT
         "AFTER_PUSH_DRIVERS_2": [56.9, -17.3, -18.5, 2.1, 31.3, 54.5, 15], #JOINT
         "BEFORE_PICK_WIRE1": [57.3, -32, -18.2, 2.1, 45, 54.5, 20], #JOINT
+        "PICK_WIRE1": [34.4, -4.4, -35, 13.7, 57.6, 114.8, 10],
         "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
     }
     def __init__(self):
@@ -127,6 +128,8 @@ class ElectronicsStation:
         self.arm.motion_enable(enable=True)
         self.arm.set_mode(0) # Position control
         self.arm.set_state(state=0)
+
+        self.list_states = list(self.ARM_STATES.keys())
 
         # Gripper configs
         if USE_GRIPPER:
@@ -205,236 +208,6 @@ class ElectronicsStation:
             self.send_arm_state(self.current_state, lineal=True)
             self.current_state = "BEFORE_PLACE_ARDUINO"
 
-        elif self.current_state == "BEFORE_PLACE_ARDUINO":
-            self.send_arm_state(self.current_state)
-            self.current_state = "SAFE_PLACE_ARDUINO"
-        
-        elif self.current_state == "SAFE_PLACE_ARDUINO":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PLACE_ARDUINO"
-        
-        elif self.current_state == "PLACE_ARDUINO":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state)
-            self.send_gripper_state(self.current_state)
-            time.sleep(1)
-            self.current_state = "AFTER_PLACE_ARDUINO"
-
-        elif self.current_state == "AFTER_PLACE_ARDUINO":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PICK_SHIELD"
-
-        elif self.current_state == "BEFORE_PICK_SHIELD":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PICK_SHIELD_2"
-        
-        elif self.current_state == "BEFORE_PICK_SHIELD_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PICK_SHIELD_0"
-        
-        elif self.current_state == "PICK_SHIELD_0":
-            self.static_speech_feedback("PICK_SHIELD")
-            self.send_arm_state(self.current_state)
-            self.current_state = "PICK_SHIELD_1"
-        
-        elif self.current_state == "PICK_SHIELD_1":
-            self.send_arm_state(self.current_state)
-            self.send_gripper_state("PICK_SHIELD")
-            time.sleep(1)
-            self.current_state = "AFTER_PICK_SHIELD"
-
-        elif self.current_state == "PICK_SHIELD":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state, lineal=True)
-            self.send_gripper_state(self.current_state)
-            time.sleep(1)
-            self.current_state = "AFTER_PICK_SHIELD"
-        
-        elif self.current_state == "AFTER_PICK_SHIELD":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PICK_SHIELD_1"
-        
-        elif self.current_state == "AFTER_PICK_SHIELD_1":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PLACE_SHIELD_T"
-
-        elif self.current_state == "BEFORE_PLACE_SHIELD":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PLACE_SHIELD_1"
-        
-        elif self.current_state == "BEFORE_PLACE_SHIELD_1":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PLACE_SHIELD"
-        
-        elif self.current_state == "BEFORE_PLACE_SHIELD_T":
-            self.send_arm_state(self.current_state)
-            self.current_state = "SAFE_PLACE_SHIELD"
-        
-        elif self.current_state == "SAFE_PLACE_SHIELD":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PLACE_SHIELD"
-
-        elif self.current_state == "PLACE_SHIELD":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state)
-            self.send_gripper_state(self.current_state)
-            time.sleep(1)
-            self.current_state = "AFTER_PLACE_SHIELD"
-
-        elif self.current_state == "AFTER_PLACE_SHIELD":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PUSH_SHIELD"
-        
-        elif self.current_state == "PUSH_SHIELD":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PUSH_SHIELD"
-        
-        elif self.current_state == "AFTER_PUSH_SHIELD":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PUSH_SHIELD_1"
-        
-        elif self.current_state == "PUSH_SHIELD_1":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PUSH_SHIELD_1"
-        
-        elif self.current_state == "AFTER_PUSH_SHIELD_1":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PUSH_SHIELD_2"
-        
-        elif self.current_state == "PUSH_SHIELD_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PUSH_SHIELD_2"
-        
-        elif self.current_state == "AFTER_PUSH_SHIELD_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PUSH_SHIELD_3"
-        
-        elif self.current_state == "PUSH_SHIELD_3":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PUSH_SHIELD_3"
-        
-        elif self.current_state == "AFTER_PUSH_SHIELD_3":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PICK_DRIVER1"
-        
-        elif self.current_state == "PUSH_SHIELD_4":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PUSH_SHIELD_4"
-        
-        elif self.current_state == "AFTER_PUSH_SHIELD_4":
-            self.send_arm_state(self.current_state)
-            self.current_state = "HOME"
-
-        elif self.current_state == "BEFORE_PICK_DRIVER1":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PICK_DRIVER1_2"
-
-        elif self.current_state == "BEFORE_PICK_DRIVER1_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PICK_DRIVER1_3"
-
-        elif self.current_state == "BEFORE_PICK_DRIVER1_3":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PICK_DRIVER1"
- 
-        elif self.current_state == "PICK_DRIVER1":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state)
-            self.send_gripper_state(self.current_state)
-            time.sleep(1)
-            self.current_state = "AFTER_PICK_DRIVER1"
-        
-        elif self.current_state == "AFTER_PICK_DRIVER1":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PICK_DRIVER1_2"
-        
-        elif self.current_state == "AFTER_PICK_DRIVER1_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PLACE_DRIVER1"
-        
-        elif self.current_state == "BEFORE_PLACE_DRIVER1":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PLACE_DRIVER1"
-        
-        elif self.current_state == "PLACE_DRIVER1":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state)
-            self.send_gripper_state(self.current_state)
-            time.sleep(1)
-            self.current_state = "AFTER_PLACE_DRIVER1"
-        
-        elif self.current_state == "AFTER_PLACE_DRIVER1":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PLACE_DRIVER1_2"
-
-        elif self.current_state == "AFTER_PLACE_DRIVER1_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PICK_DRIVER2"
-        
-        elif self.current_state == "BEFORE_PICK_DRIVER2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PICK_DRIVER2"
-        
-        elif self.current_state == "PICK_DRIVER2":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state)
-            self.send_gripper_state(self.current_state)
-            time.sleep(1)
-            self.current_state = "AFTER_PICK_DRIVER2"
-        
-        elif self.current_state == "AFTER_PICK_DRIVER2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PICK_DRIVER2_2"
-        
-        elif self.current_state == "AFTER_PICK_DRIVER2_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PLACE_DRIVER2"
-        
-        elif self.current_state == "BEFORE_PLACE_DRIVER2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PLACE_DRIVER2"
-        
-        elif self.current_state == "PLACE_DRIVER2":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state)
-            self.send_gripper_state(self.current_state)
-            time.sleep(1)
-            self.current_state = "AFTER_PLACE_DRIVER2"
-        
-        elif self.current_state == "AFTER_PLACE_DRIVER2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PLACE_DRIVER2_2"
-
-        elif self.current_state == "AFTER_PLACE_DRIVER2_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PUSH_DRIVERS"
-        
-        elif self.current_state == "BEFORE_PUSH_DRIVERS":
-            self.send_arm_state(self.current_state)
-            self.current_state = "SAFE_PUSH_DRIVERS"
-        
-        elif self.current_state == "SAFE_PUSH_DRIVERS":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PUSH_DRIVERS"
-
-        elif self.current_state == "PUSH_DRIVERS":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PUSH_DRIVERS"
-        
-        elif self.current_state == "AFTER_PUSH_DRIVERS":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PUSH_DRIVERS_2"
-        
-        elif self.current_state == "PUSH_DRIVERS_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "AFTER_PUSH_DRIVERS_2"
-        
-        elif self.current_state == "AFTER_PUSH_DRIVERS_2":
-            self.send_arm_state(self.current_state)
-            self.current_state = "BEFORE_PICK_WIRE1"
-        
         elif self.current_state == "BEFORE_PICK_WIRE1":
             self.send_arm_state(self.current_state)
             self.current_state = "HOME"
@@ -446,9 +219,20 @@ class ElectronicsStation:
             if self.plc_action_data[0] == 0b00000000:
                 time.sleep(2)
                 self.current_state = "HOME"
-          
 
+        else:
+            if self.current_state not in self.ARM_STATES:
+                print(f"Invalid state: {self.current_state}")
 
+            if self.current_state in self.GRIPPER_STATES:
+                self.static_speech_feedback(self.current_state)
+                self.send_arm_state(self.current_state)
+                self.send_gripper_state(self.current_state)
+                time.sleep(1)
+            else:
+                self.send_arm_state(self.current_state)
+            # Get next state index
+            self.current_state = self.list_states[self.list_states.index(self.current_state) + 1]
 
         time.sleep(0.1)
 
