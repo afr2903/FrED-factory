@@ -36,19 +36,19 @@ class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
-        "HOME": [85, 0],
-        "PICK_ARDUINO": [15, 0],
-        "PLACE_ARDUINO": [85, 0],
-        "PICK_SHIELD": [30, 0],
-        "PLACE_SHIELD":[85, 0],
-        "PUSH_SHIELD": [85, 0],
-        "PICK_DRIVER1": [85, 40],
-        "PLACE_DRIVER1": [85, 0],
-        "PICK_DRIVER2": [85, 40],
-        "PLACE_DRIVER2": [85, 0],
-        "PUSH_DRIVERS": [85, 40],
-        "PICK_WIRE": [85, 79],
-        "FINISH_ROUTINE":[85, 40]
+        "HOME": [105, 0],
+        "PICK_ARDUINO": [38, 0],
+        "PLACE_ARDUINO": [105, 0],
+        "PICK_SHIELD": [57, 0],
+        "PLACE_SHIELD":[105, 0],
+        "PUSH_SHIELD": [105, 0],
+        "PICK_DRIVER1": [105, 40],
+        "PLACE_DRIVER1": [105, 0],
+        "PICK_DRIVER2": [105, 40],
+        "PLACE_DRIVER2": [105, 0],
+        "PUSH_DRIVERS": [105, 40],
+        "PICK_WIRE": [105, 79],
+        "FINISH_ROUTINE":[105, 40]
     }
     ARM_STATES = {
         # [x, y, z, roll, pitch, yaw, speed]
@@ -89,24 +89,24 @@ class ElectronicsStation:
         "PICK_DRIVER1": [67.7, 53.6, -111.5, -23.3, 117, 65.6, 5], #JOINT
         "AFTER_PICK_DRIVER1": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
         "AFTER_PICK_DRIVER1_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
-        "BEFORE_PLACE_DRIVER1": [72.3, 25.4, -70.2, -26.1, 134.6, 65.9, 15], #JOINT
-        "PLACE_DRIVER1": [71.4, 21.9, -65.7, -25.8, 127.8, 63.4, 5], #JOINT
-        "AFTER_PLACE_DRIVER1": [72.3, 25.5, -69.9, -26, 134.6, 63.5, 15], #JOINT
+        "BEFORE_PLACE_DRIVER1": [71.6, 20.3, -66.2, -26.1, 130.4, 63.4, 15], #JOINT
+        "PLACE_DRIVER1": [70.9, 16.9, -62.3, -22.6, 126, 70.2, 5], #JOINT
+        "AFTER_PLACE_DRIVER1": [71.6, 20.3, -66.2, -26.1, 130.4, 63.4, 15], #JOINT
         "AFTER_PLACE_DRIVER1_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
         "BEFORE_PICK_DRIVER2": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
         "PICK_DRIVER2": [67.7, 53.6, -111.5, -23.3, 117, 65.6, 5], #JOINT
         "AFTER_PICK_DRIVER2": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
         "AFTER_PICK_DRIVER2_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
-        "BEFORE_PLACE_DRIVER2": [70.4, 15.9, -59.6, -25.5, 127.7, 67.7, 15], #JOINT
-        "PLACE_DRIVER2": [70.5, 16, -58.7, -24.5, 124.1, 67.6, 5], #JOINT
-        "AFTER_PLACE_DRIVER2": [70.4, 15.9, -59.6, -25.5, 127.7, 67.7, 15], #JOINT
+        "BEFORE_PLACE_DRIVER2": [71.2, 15.9, -59.8, -25.5, 127.7, 67.6, 15], #JOINT
+        "PLACE_DRIVER2": [70.9, 15.9, -59.4, -25.5, 125.9, 67.6, 5], #JOINT
+        "AFTER_PLACE_DRIVER2": [71.2, 15.9, -59.8, -25.5, 127.7, 67.6, 15], #JOINT
         "AFTER_PLACE_DRIVER2_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
         "BEFORE_PUSH_DRIVERS": [57.3, -32, -18.2, 2.1, 45, 54.5, 20], #JOINT
-        "SAFE_PUSH_DRIVERS": [56.9, -17.3, -18.5, 2.1, 31.3, 54.5, 10], #JOINT
-        "PUSH_DRIVERS": [56.4, -13, -17.3, 2.1, 30.2, 54.5, 45], #JOINT
-        "AFTER_PUSH_DRIVERS": [56.9, -17.3, -18.5, 2.1, 31.3, 54.5, 15], #JOINT
-        "PUSH_DRIVERS_2": [56.4, -13, -17.3, 2.1, 30.2, 54.5, 45], #JOINT
-        "AFTER_PUSH_DRIVERS_2": [56.9, -17.3, -18.5, 2.1, 31.3, 54.5, 15], #JOINT
+        "SAFE_PUSH_DRIVERS": [55.4, -22.7, -13.5, 2.6, 33.9, 52.5, 10], #JOINT
+        "PUSH_DRIVERS": [55.4, -15.1, -16, 2.6, 31.7, 52.6, 45], #JOINT
+        "AFTER_PUSH_DRIVERS": [55.4, -22.7, -13.5, 2.6, 33.9, 52.5, 10], #JOINT
+        "PUSH_DRIVERS_2": [55.4, -15.1, -16, 2.6, 31.7, 52.6, 45], #JOINT
+        "AFTER_PUSH_DRIVERS_2": [55.4, -22.7, -13.5, 2.6, 33.9, 52.5, 10], #JOINT
         "BEFORE_PICK_WIRE1": [57.3, -32, -18.2, 2.1, 45, 54.5, 20], #JOINT
         "PICK_WIRE1": [34.4, -4.4, -35, 13.7, 57.6, 114.8, 10],
         "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
@@ -184,8 +184,8 @@ class ElectronicsStation:
             if USE_PLC:
                 self.current_state = "WAIT_SENSOR"
             else:
-                self.current_state = "BEFORE_PICK_ARDUINO"
-                #self.current_state = "BEFORE_PICK_DRIVER1"
+                #self.current_state = "BEFORE_PICK_ARDUINO"
+                self.current_state = "BEFORE_PICK_DRIVER1"
 
         elif self.current_state == "WAIT_SENSOR":
             self.plc_action_data = self.plc.db_read(1, 0, 2)
