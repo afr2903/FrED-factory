@@ -47,6 +47,7 @@ class ElectronicsStation:
         "PICK_DRIVER2": [105, 40],
         "PLACE_DRIVER2": [105, 0],
         "PUSH_DRIVERS": [105, 40],
+        #"PICK_ASSEMBLY": [57,0],
         "PICK_WIRE": [105, 79],
         "FINISH_ROUTINE":[105, 40]
     }
@@ -107,6 +108,9 @@ class ElectronicsStation:
         "AFTER_PUSH_DRIVERS": [55.4, -22.7, -13.5, 2.6, 33.9, 52.5, 10], #JOINT
         "PUSH_DRIVERS_2": [55.4, -15.1, -16, 2.6, 31.7, 52.6, 45], #JOINT
         "AFTER_PUSH_DRIVERS_2": [55.4, -22.7, -13.5, 2.6, 33.9, 52.5, 10], #JOINT
+        #"BEFORE_PICK_ASSEMBLY":[55.4, -14.1, -17.3, 2.6, 31.7, 52.6, 40], #JOINT
+        #"PICK_ASSEMBLY": [55.4, -14.1, -17.3, 2.6, 31.7, 52.6, 15], #JOINT
+        #"PICK_ASSEMBLY2": [57.3, -18, -11.3, 12, 21.6, 47.4, 15], #JOINT
         "BEFORE_PICK_WIRE1": [57.3, -32, -18.2, 2.1, 45, 54.5, 20], #JOINT
         "PICK_WIRE1": [34.4, -4.4, -35, 13.7, 57.6, 114.8, 10],
         "FINISH_ROUTINE":[0, -70, -20, 0, 90, 0, 30] #JOINT
