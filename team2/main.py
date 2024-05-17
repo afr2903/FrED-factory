@@ -98,7 +98,7 @@ class ElectronicsStation:
         "AFTER_PICK_DRIVER2": [66.9, 51.7, -111, -22.5, 119.8, 64.9, 15], #JOINT
         "AFTER_PICK_DRIVER2_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
         "BEFORE_PLACE_DRIVER2": [71.2, 15.9, -59.8, -25.5, 127.7, 67.6, 15], #JOINT
-        "PLACE_DRIVER2": [70.9, 15.9, -59.4, -25.5, 125.9, 67.6, 5], #JOINT
+        "PLACE_DRIVER2": [71.1, 16.2, -59.5, -25.5, 126.4, 67.7, 5], #JOINT
         "AFTER_PLACE_DRIVER2": [71.2, 15.9, -59.8, -25.5, 127.7, 67.6, 15], #JOINT
         "AFTER_PLACE_DRIVER2_2": [72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20], #JOINT
         "BEFORE_PUSH_DRIVERS": [57.3, -32, -18.2, 2.1, 45, 54.5, 20], #JOINT
