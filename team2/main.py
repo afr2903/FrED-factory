@@ -36,20 +36,20 @@ class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
-        "HOME": [105, 0],
-        "PICK_ARDUINO": [38, 0],
-        "PLACE_ARDUINO": [105, 0],
-        "PICK_SHIELD": [57, 0],
-        "PLACE_SHIELD":[105, 0],
-        "PUSH_SHIELD": [105, 0],
-        "PICK_DRIVER1": [105, 40],
-        "PLACE_DRIVER1": [105, 0],
-        "PICK_DRIVER2": [105, 40],
-        "PLACE_DRIVER2": [105, 0],
-        "PUSH_DRIVERS": [105, 40],
+        "HOME": [111, 0],
+        "PICK_ARDUINO": [44, 0],
+        "PLACE_ARDUINO": [111, 0],
+        "PICK_SHIELD": [63, 0],
+        "PLACE_SHIELD":[111, 0],
+        "PUSH_SHIELD": [111, 0],
+        "PICK_DRIVER1": [111, 40],
+        "PLACE_DRIVER1": [111, 0],
+        "PICK_DRIVER2": [111, 40],
+        "PLACE_DRIVER2": [111, 0],
+        "PUSH_DRIVERS": [111, 40],
         #"PICK_ASSEMBLY": [57,0],
-        "PICK_WIRE": [105, 79],
-        "FINISH_ROUTINE":[105, 40]
+        "PICK_WIRE": [111, 79],
+        "FINISH_ROUTINE":[111, 40]
     }
     ARM_STATES = {
         # [x, y, z, roll, pitch, yaw, speed]
@@ -133,6 +133,8 @@ class ElectronicsStation:
         self.arm.set_mode(0) # Position control
         self.arm.set_state(state=0)
 
+        self.contador_Arduino = 5 
+
         self.list_states = list(self.ARM_STATES.keys())
 
         # Gripper configs
@@ -192,24 +194,37 @@ class ElectronicsStation:
                 self.current_state = "BEFORE_PICK_DRIVER1"
 
         elif self.current_state == "WAIT_SENSOR":
-            self.plc_action_data = self.plc.db_read(1, 0, 2)
+            self.plc_action_data = self.plc.db_read(1, 0, 14)
             if self.plc_action_data[0] == 0b00000001:
                 time.sleep(2)
                 self.current_state = "BEFORE_PICK_ARDUINO"
    
         elif self.current_state == "BEFORE_PICK_ARDUINO":
-            self.send_arm_state(self.current_state)
-            self.current_state = "PICK_ARDUINO"
+           self.send_arm_state(self.current_state)
+           self.current_state = "PICK_ARDUINO"
         
         elif self.current_state == "PICK_ARDUINO":
-            self.static_speech_feedback(self.current_state)
-            self.send_arm_state(self.current_state, lineal=True)
-            self.send_gripper_state(self.current_state)
-            time.sleep(1)
-            self.current_state = "AFTER_PICK_ARDUINO"
+           self.static_speech_feedback(self.current_state)
+           self.send_arm_state(self.current_state, lineal=True)
+           self.send_gripper_state(self.current_state)
+           time.sleep(1)
+           self.current_state = "AFTER_PICK_ARDUINO"
 
         elif self.current_state == "AFTER_PICK_ARDUINO":
             self.send_arm_state(self.current_state, lineal=True)
+
+            # self.contador_Arduino -= 1
+        
+            # print(self.contador_Arduino)
+            # datatmp = bytearray(self.contador_Arduino.to_bytes(2,"big"))
+            # self.plc_action_data[4] = datatmp[0]
+            # self.plc_action_data[5] = datatmp[1]
+        
+            # print(self.plc_action_data)
+            # self.plc.db_write(1, 0, self.plc_action_data)
+            # pass
+            
+
             self.current_state = "BEFORE_PLACE_ARDUINO"
 
         elif self.current_state == "BEFORE_PICK_WIRE1":
@@ -233,6 +248,7 @@ class ElectronicsStation:
                 self.send_arm_state(self.current_state)
                 self.send_gripper_state(self.current_state)
                 time.sleep(1)
+     
             else:
                 self.send_arm_state(self.current_state)
             # Get next state index

@@ -9,8 +9,8 @@ MESSAGE = ""               # Initialize message
 
 WIRE_LOWER_LIMIT = 0
 WIRE_UPPER_LIMIT = 79
-BOARD_LOWER_LIMIT = 15
-BOARD_UPPER_LIMIT = 120
+BOARD_LOWER_LIMIT = 21
+BOARD_UPPER_LIMIT = 111
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 gui = Tk()
