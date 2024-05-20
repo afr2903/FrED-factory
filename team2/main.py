@@ -8,7 +8,7 @@ USE_SPEECH = False
 USE_ARM = True
 USE_GRIPPER = True
 
-STATE_TO_RECORD = "AFTER_PICK_SHIELD"
+STATE_TO_RECORD = "PUSH_SHIELD_1"
 
 # Libraries imports
 import socket
@@ -37,17 +37,17 @@ MESSAGE = ""               # Initialize message
 RACK = 0
 SLOT = 1
 
-BOARD_TCP = [38.15, 0, 99.2, 0, 0, 0]
-WIRE_TCP = [0, 125.64572, 62.54373, 0, 0, 0]
+BOARD_TCP = [5.03, 39.81, 105.6, 0, 0, 0]
+WIRE_TCP = [4.75, -130.62, 70.08, 0, 0, 0]
 
 class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
         "HOME": [111, 0],
-        "PICK_ARDUINO": [35, 0],
+        "PICK_ARDUINO": [31, 0],
         "PLACE_ARDUINO": [111, 0],
-        "PICK_SHIELD": [46, 0],
+        "PICK_SHIELD": [45, 0],
         "PLACE_SHIELD":[111, 0],
         "PUSH_SHIELD": [111, 0],
         "PICK_DRIVER1": [111, 40],
@@ -74,15 +74,23 @@ class ElectronicsStation:
         "BEFORE_PICK_SHIELD_2": ["J", 107.7, 9.5, -26.5, 23.5, -7.9, -95.3, 20],
         #"PICK_SHIELD_0": ["J", 109.7, 12.1, -29.4, 35.8, -5.9, -108.1, 15],
         #"PICK_SHIELD": ["J", 111.4, 17.9, -30.3, 35.8, -16.6, -108.1, 15],
-        "PICK_SHIELD": ["L", -120.925568, 423.625702, 61.362858, 152.175184, 2.62598, -178.750342, 10, "B"],
-        "AFTER_PICK_SHIELD": ["J", 111.6, 13.4, -27.4, 35.8, -16.6, -108.2, 15],
+        #"PICK_SHIELD": ["L", -120.925568, 423.625702, 61.362858, 152.175184, 2.62598, -178.750342, 10, "B"],
+        "PICK_SHIELD": ["L", -90.355515, 463.406311, 76.797081, 149.918246, 1.207738, -179.569843, 10, "B"],
+        #"AFTER_PICK_SHIELD": ["J", 111.6, 13.4, -27.4, 35.8, -16.6, -108.2, 15],
+        "AFTER_PICK_SHIELD": ["L", -96.649063, 441.632538, 119.793488, 146.556072, -0.534512, -178.378778, 10, "B"],
         "AFTER_PICK_SHIELD_1": ["J", 110.4, -6.9, -17.5, 35.8, -4.4, -108.4, 20],
         "BEFORE_PLACE_SHIELD": ["J", 55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 30],
-        "SAFE_PLACE_SHIELD": ["J", 59, -17.9, -18.7, 5.3, 32.1, 54, 15],
-        "PLACE_SHIELD": ["J", 59.6, -13.8, -18.7, 6.8, 28.2, 52.3, 5],
-        "AFTER_PLACE_SHIELD": ["J", 57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15],
-        "PUSH_SHIELD": ["J", 55.7, -13.5, -16.5, 0.5, 34.4, 53.3, 45],
-        "AFTER_PUSH_SHIELD": ["J", 55.7, -19.9, -16.5, 0.5, 34.4, 53.3, 15],
+        #"SAFE_PLACE_SHIELD": ["J", 59, -17.9, -18.7, 5.3, 32.1, 54, 15],
+        "SAFE_PLACE_SHIELD": ["J", 59.045994, -16.6568, -18.754456, 8.428725, 30.932788, 52.975506, 10],
+        #"PLACE_SHIELD": ["J", 59.6, -13.8, -18.7, 6.8, 28.2, 52.3, 5],
+        "PLACE_SHIELD": ["L", 165.455994, 238.415649, 104.730347, -171.572384, -1.126435, -1.054987, 10, "B"],
+        "AFTER_PLACE_SHIELD": ["L", 165.455994, 238.415649, 134.730347, -171.572384, -1.126435, -1.054987, 10, "B"],
+        #"AFTER_PLACE_SHIELD": ["J", 57.6, -19.9, -13.7, 3.1, 28.4, 53.6, 15],
+        "BEFORE_PUSH_SHIELD": ["J", 56.120471, -16.822499, -16.341616, 4.443975, 35.192386, 53.043229, 10],
+        #"PUSH_SHIELD": ["J", 55.7, -13.5, -16.5, 0.5, 34.4, 53.3, 45],
+        "PUSH_SHIELD": ["L", 163.246918, 203.765717, 92.109421, 179.887491, 3.111562, -0.49303, 30, "B"],
+        "AFTER_PUSH_SHIELD": ["L", 163.246918, 203.765717, 110.109421, 179.887491, 3.111562, -0.49303, 10, "B"],
+        #"AFTER_PUSH_SHIELD": ["J", 55.7, -19.9, -16.5, 0.5, 34.4, 53.3, 15],
         "PUSH_SHIELD_1": ["J", 55.7, -18, -11, 2.9, 28.9, 52.9, 45],
         "AFTER_PUSH_SHIELD_1": ["J", 55.7, -22, -11, 2.9, 28.9, 52.9, 45],
         "PUSH_SHIELD_2": ["J", 55.7, -13.5, -16.5, 0.5, 34.4, 53.3, 45],
@@ -225,9 +233,9 @@ class ElectronicsStation:
             print("The program has been stopped, type Ctrl+C to exit")
             self.arm.disconnect()
             sys.exit()
-        
-        self.arm.set_mode(0) # Position control
-        self.arm.set_state(0)
+        else: 
+            self.arm.set_mode(0) # Position control
+            self.arm.set_state(0)
 
     def run(self):
         """Main loop of the electronics station"""
