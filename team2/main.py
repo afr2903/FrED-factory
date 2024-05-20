@@ -18,6 +18,9 @@ import os
 import sys
 from configparser import ConfigParser
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
+if USE_GRIPPER:
+    from tkinter import Tk, Scale, HORIZONTAL, Label, Button
+    #from gripper_teleop import send_data
 if USE_PLC:
     import snap7
 if USE_SPEECH:
@@ -33,6 +36,9 @@ MESSAGE = ""               # Initialize message
 
 RACK = 0
 SLOT = 1
+
+BOARD_TCP = [0,0,0,0,0,0]
+WIRE_TCP = [0,0,0,0,0,0]
 
 class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
@@ -127,7 +133,7 @@ class ElectronicsStation:
         self.arm.set_mode(0) # Position control
         self.arm.set_state(state=0)
 
-        self.contador_Arduino = 5 
+        self.arduino_counter = 0
 
         self.list_states = list(self.ARM_STATES.keys())
 
@@ -173,6 +179,41 @@ class ElectronicsStation:
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy():
             pygame.time.Clock().tick(10)
+
+    def record_state(self, state):
+        """Record a new state for the arm and gripper"""
+        print(f"Recording state: {state}")
+        self.arm.set_mode(2) # Joint teaching mode
+        self.arm.set_state(0)
+        print("The arm is now in MANUAL mode, press enter to record the position...")
+        input()
+        print("Do you want to record a joint or lineal position? (J/L)")
+        movement_type = input()
+        if movement_type.upper() == "J": # Joint position
+            joint_position = self.arm.get_servo_angle()
+            print("Joint position recorded, paste the following line in the ARM_STATES dictionary:")
+            print(f"\"{state}\": [\"J\", {joint_position[1][0]}, {joint_position[1][1]}, {joint_position[1][2]}, {joint_position[1][3]}, {joint_position[1][4]}, {joint_position[1][5]}, 10],")
+        
+        elif movement_type.upper() == "L": # Lineal position
+            print("Which is the desired TCP, board or wire gripper? (B/W)")
+            desired_tcp = input()
+            if desired_tcp.upper() == "B":
+                self.arm.set_tcp_offset(BOARD_TCP)
+            elif desired_tcp.upper() == "W":
+                self.arm.set_tcp_offset(WIRE_TCP)
+            lineal_position = self.arm.get_position()
+            print("Lineal position recorded, paste the following line in the ARM_STATES dictionary:")
+            print(f"\"{state}\": [\"L\", {lineal_position[1][0]}, {lineal_position[1][1]}, {lineal_position[1][2]}, {lineal_position[1][3]}, {lineal_position[1][4]}, {lineal_position[1][5]}, 10, {desired_tcp.upper()}],")
+
+        print("Do you want to continue the program? (Y/N)")
+        continue_program = input()
+        if continue_program.upper() == "N":
+            print("The program has been stopped, type Ctrl+C to exit")
+            self.arm.disconnect()
+            sys.exit()
+        
+        self.arm.set_mode(0) # Position control
+        self.arm.set_state(0)
 
     def run(self):
         """Main loop of the electronics station"""
@@ -236,6 +277,11 @@ class ElectronicsStation:
         else:
             if self.current_state not in self.ARM_STATES:
                 print(f"Invalid state: {self.current_state}")
+
+            if self.current_state is STATE_TO_RECORD:
+                self.record_state(STATE_TO_RECORD)
+                self.current_state = self.list_states[self.list_states.index(self.current_state) + 1]
+                return
 
             if self.current_state in self.GRIPPER_STATES:
                 self.static_speech_feedback(self.current_state)
