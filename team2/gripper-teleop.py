@@ -3,14 +3,14 @@ import socket
 import time
 from tkinter import Tk, Scale, HORIZONTAL, Label, Button
 
-UDP_IP = "192.168.34.23"  # IP address of the ESP32
+UDP_IP = "192.168.2.23"  # IP address of the ESP32
 UDP_PORT = 1234            # Port number
 MESSAGE = ""               # Initialize message
 
-WIRE_LOWER_LIMIT = 0;
-WIRE_UPPER_LIMIT = 70;
-BOARD_LOWER_LIMIT = 80;
-BOARD_UPPER_LIMIT = 170;
+WIRE_LOWER_LIMIT = 0
+WIRE_UPPER_LIMIT = 79
+BOARD_LOWER_LIMIT = 21
+BOARD_UPPER_LIMIT = 111
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 gui = Tk()

@@ -17,15 +17,21 @@ Servo board_gripper;
 const int WIRE_PWM_PIN = 13;
 const int BOARD_PWM_PIN = 12;
 
+// Servo values
+int wire_current_pos = -1;
+int board_current_pos = -1;
+int wire_target_pos = -1;
+int board_target_pos = -1;
+
 // Network setup & credentials
-const char *ssid = "afr2903";
-const char *password = "12345678"; // Set password
+const char *ssid = "ESP32_AP";
+const char *password = "mit"; // Set password
 const int udpPort = 1234;
 
 WiFiUDP udp;
 
-IPAddress staticIP(192, 168, 34, 23); // Set the desired static IP address
-IPAddress gateway(192, 168, 34, 1);   // Set the gateway of your network
+IPAddress staticIP(192, 168, 2, 23); // Set the desired static IP address
+IPAddress gateway(192, 168, 2, 1);   // Set the gateway of your network
 IPAddress subnet(255, 255, 255, 0);   // Set the subnet mask of your network
 
 void setup(){
@@ -33,18 +39,12 @@ void setup(){
 
     // WiFi connection
     Serial.println();
-    WiFi.begin(ssid, password);
+    //WiFi.begin(ssid, password);
+    WiFi.softAPConfig(staticIP, gateway, subnet);
+    WiFi.softAP(ssid, password);
 
-    while (WiFi.status() != WL_CONNECTED){
-        delay(1000);
-        Serial.println("Connecting to WiFi...");
-    }
-
-    Serial.println("Connected to WiFi");
-    WiFi.config(staticIP, gateway, subnet);
-
-    Serial.print("Current ip: ");
-    Serial.println(WiFi.localIP());
+    Serial.print("Current IP: ");
+    Serial.println(WiFi.softAPIP());
 
     udp.begin(udpPort);
     Serial.println("UDP server started");
@@ -79,15 +79,32 @@ void loop(){
                     message += letter;
             }
             int target_pos = message.toInt();
-            Serial.printf("UDP packet contents: %c%i\n", incoming_packet[0], target_pos);
+            Serial.printf("Target: %c%i\n", incoming_packet[0], target_pos);
             Serial.println();
 
             if (board_requested){
-                board_gripper.write(target_pos);
+                board_target_pos = target_pos;
             } else {
-                wire_gripper.write(target_pos);
+                wire_target_pos = target_pos;
             }
         }
     }
-    delay(10);
+
+    // Set the current position to the target position with ramp
+    if (wire_current_pos != wire_target_pos){
+        if (wire_current_pos == -1)
+            wire_current_pos = wire_target_pos - 1;
+        wire_current_pos += wire_current_pos < wire_target_pos ? 1 : -1;
+        wire_gripper.write(wire_current_pos);
+        Serial.printf("Wire: %i\n", wire_current_pos);
+    }
+    if (board_current_pos != board_target_pos){
+        if (board_current_pos == -1)
+            board_current_pos = board_target_pos - 1;
+        board_current_pos += board_current_pos < board_target_pos ? 1 : -1;
+        board_gripper.write(board_current_pos);
+        Serial.printf("Board: %i\n", board_current_pos);
+    }
+
+    delay(20);
 }
