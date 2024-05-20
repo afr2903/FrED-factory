@@ -163,9 +163,15 @@ class ElectronicsStation:
 
     def send_arm_state(self, state, lineal=False):
         """Send the data to the xArm"""
-        x, y, z, roll, pitch, yaw, speed = self.ARM_STATES[state]
+        x, y, z, roll, pitch, yaw, speed = self.ARM_STATES[state][1:7]
+        lineal = self.ARM_STATES[state][0] == "L"
         print(f"Sending arm to state: {state}")
         if lineal:
+            tcp = self.ARM_STATES[state][8]
+            if tcp == "B":
+                self.arm.set_tcp_offset(BOARD_TCP)
+            elif tcp == "W":
+                self.arm.set_tcp_offset(WIRE_TCP)
             self.arm.set_position(x=x, y=y, z=z, roll=roll, pitch=pitch, yaw=yaw, speed=speed, wait=True)
         else:
             self.arm.set_servo_angle(angle=[x, y, z, roll, pitch, yaw], speed=speed, wait=True)
