@@ -8,7 +8,7 @@ USE_SPEECH = False
 USE_ARM = True
 USE_GRIPPER = True
 
-STATE_TO_RECORD = "PICK_ARDUINO"
+STATE_TO_RECORD = "AFTER_PICK_SHIELD"
 
 # Libraries imports
 import socket
@@ -37,17 +37,17 @@ MESSAGE = ""               # Initialize message
 RACK = 0
 SLOT = 1
 
-BOARD_TCP = [0,0,0,0,0,0]
-WIRE_TCP = [0,0,0,0,0,0]
+BOARD_TCP = [38.15, 0, 99.2, 0, 0, 0]
+WIRE_TCP = [0, 125.64572, 62.54373, 0, 0, 0]
 
 class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
         "HOME": [111, 0],
-        "PICK_ARDUINO": [44, 0],
+        "PICK_ARDUINO": [35, 0],
         "PLACE_ARDUINO": [111, 0],
-        "PICK_SHIELD": [63, 0],
+        "PICK_SHIELD": [46, 0],
         "PLACE_SHIELD":[111, 0],
         "PUSH_SHIELD": [111, 0],
         "PICK_DRIVER1": [111, 40],
@@ -63,16 +63,18 @@ class ElectronicsStation:
         # [x, y, z, roll, pitch, yaw, speed]
         "HOME": ["J", 0, -70, -20, 0, 90, 0, 30],
         "BEFORE_PICK_ARDUINO": ["J", 84.4, -4.4, -17.2, -9.2, -19.4, 94.4, 40],
-        "PICK_ARDUINO": ["L", 11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 30],
-        "AFTER_PICK_ARDUINO": ["L", 17.6, 349.4, 241, -139.1, 0.2, -0.8, 40],
+        "PICK_ARDUINO": ["L", 11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 30, "D"],
+        #"PICK_ARDUINO": ["L", 49.733051, 463.314362, 79.767365, -145.079216, 1.329606, 0.099007, 10, "B"],
+        "AFTER_PICK_ARDUINO": ["L", 17.6, 349.4, 241, -139.1, 0.2, -0.8, 40, "D"],
         "BEFORE_PLACE_ARDUINO": ["J", 60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 50],
         "SAFE_PLACE_ARDUINO": ["J", 59.7, -11, -24.9, 0.4, 37.3, 63.1, 35],
         "PLACE_ARDUINO": ["J", 60, -7.8, -23.8, 0.4, 32.3, 61.4, 15],
         "AFTER_PLACE_ARDUINO": ["J", 60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 30],
         "BEFORE_PICK_SHIELD": ["J", 111.5, 1.8, -17, 23.6, -14.9, -92.3, 40],
         "BEFORE_PICK_SHIELD_2": ["J", 107.7, 9.5, -26.5, 23.5, -7.9, -95.3, 20],
-        "PICK_SHIELD_0": ["J", 109.7, 12.1, -29.4, 35.8, -5.9, -108.1, 15],
-        "PICK_SHIELD": ["J", 111.4, 17.9, -30.3, 35.8, -16.6, -108.1, 15],
+        #"PICK_SHIELD_0": ["J", 109.7, 12.1, -29.4, 35.8, -5.9, -108.1, 15],
+        #"PICK_SHIELD": ["J", 111.4, 17.9, -30.3, 35.8, -16.6, -108.1, 15],
+        "PICK_SHIELD": ["L", -120.925568, 423.625702, 61.362858, 152.175184, 2.62598, -178.750342, 10, "B"],
         "AFTER_PICK_SHIELD": ["J", 111.6, 13.4, -27.4, 35.8, -16.6, -108.2, 15],
         "AFTER_PICK_SHIELD_1": ["J", 110.4, -6.9, -17.5, 35.8, -4.4, -108.4, 20],
         "BEFORE_PLACE_SHIELD": ["J", 55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 30],
@@ -163,7 +165,7 @@ class ElectronicsStation:
 
     def send_arm_state(self, state, lineal=False):
         """Send the data to the xArm"""
-        x, y, z, roll, pitch, yaw, speed = self.ARM_STATES[state][1:7]
+        x, y, z, roll, pitch, yaw, speed = self.ARM_STATES[state][1:8]
         lineal = self.ARM_STATES[state][0] == "L"
         print(f"Sending arm to state: {state}")
         if lineal:
@@ -172,6 +174,10 @@ class ElectronicsStation:
                 self.arm.set_tcp_offset(BOARD_TCP)
             elif tcp == "W":
                 self.arm.set_tcp_offset(WIRE_TCP)
+            else:
+                self.arm.set_tcp_offset([0,0,0,0,0,0])
+            self.arm.set_mode(0) # Position control
+            self.arm.set_state(state=0)
             self.arm.set_position(x=x, y=y, z=z, roll=roll, pitch=pitch, yaw=yaw, speed=speed, wait=True)
         else:
             self.arm.set_servo_angle(angle=[x, y, z, roll, pitch, yaw], speed=speed, wait=True)
@@ -207,9 +213,11 @@ class ElectronicsStation:
                 self.arm.set_tcp_offset(BOARD_TCP)
             elif desired_tcp.upper() == "W":
                 self.arm.set_tcp_offset(WIRE_TCP)
+            else:
+                self.arm.set_tcp_offset([0,0,0,0,0,0])
             lineal_position = self.arm.get_position()
             print("Lineal position recorded, paste the following line in the ARM_STATES dictionary:")
-            print(f"\"{state}\": [\"L\", {lineal_position[1][0]}, {lineal_position[1][1]}, {lineal_position[1][2]}, {lineal_position[1][3]}, {lineal_position[1][4]}, {lineal_position[1][5]}, 10, {desired_tcp.upper()}],")
+            print(f"\"{state}\": [\"L\", {lineal_position[1][0]}, {lineal_position[1][1]}, {lineal_position[1][2]}, {lineal_position[1][3]}, {lineal_position[1][4]}, {lineal_position[1][5]}, 10, \"{desired_tcp.upper()}\"],")
 
         print("Do you want to continue the program? (Y/N)")
         continue_program = input()
@@ -231,8 +239,8 @@ class ElectronicsStation:
             if USE_PLC:
                 self.current_state = "WAIT_SENSOR"
             else:
-                #self.current_state = "BEFORE_PICK_ARDUINO"
-                self.current_state = "BEFORE_PICK_DRIVER1"
+                self.current_state = "BEFORE_PICK_ARDUINO"
+                #self.current_state = "BEFORE_PICK_DRIVER1"
 
         elif self.current_state == "WAIT_SENSOR":
             self.plc_action_data = self.plc.db_read(1, 0, 14)
@@ -244,30 +252,6 @@ class ElectronicsStation:
            self.send_arm_state(self.current_state)
            self.current_state = "PICK_ARDUINO"
         
-        elif self.current_state == "PICK_ARDUINO":
-           self.static_speech_feedback(self.current_state)
-           self.send_arm_state(self.current_state, lineal=True)
-           self.send_gripper_state(self.current_state)
-           time.sleep(1)
-           self.current_state = "AFTER_PICK_ARDUINO"
-
-        elif self.current_state == "AFTER_PICK_ARDUINO":
-            self.send_arm_state(self.current_state, lineal=True)
-
-            # self.contador_Arduino -= 1
-        
-            # print(self.contador_Arduino)
-            # datatmp = bytearray(self.contador_Arduino.to_bytes(2,"big"))
-            # self.plc_action_data[4] = datatmp[0]
-            # self.plc_action_data[5] = datatmp[1]
-        
-            # print(self.plc_action_data)
-            # self.plc.db_write(1, 0, self.plc_action_data)
-            # pass
-            
-
-            self.current_state = "BEFORE_PLACE_ARDUINO"
-
         elif self.current_state == "BEFORE_PICK_WIRE1":
             self.send_arm_state(self.current_state)
             self.current_state = "HOME"
