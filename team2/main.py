@@ -3,15 +3,12 @@
 Main script to run the electronics station assembly proccess
 """
 # Constants for features being used
-USE_PLC = False
+USE_PLC = True
 USE_SPEECH = False
 USE_ARM = True
 USE_GRIPPER = True
 
 STATE_TO_RECORD = [
-    "SAFE_PLACE_WIRE1",
-    "PLACE_WIRE1",
-    "AFTER_PLACE_WIRE1"
 ]
 
 # Libraries imports
@@ -48,7 +45,7 @@ class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
-        "HOME": [111, 0],
+        "HOME": [100, 0],
         "PICK_ARDUINO": [31, 0],
         "PLACE_ARDUINO": [111, 0],
         "PICK_SHIELD": [45, 0],
@@ -61,8 +58,9 @@ class ElectronicsStation:
         "PUSH_DRIVERS": [75, 40],
         "PICK_ASSEMBLY": [42, 0],
         "PLACE_ASSEMBLY": [75, 0],
-        "SAFE_PICK_WIRE1": [75, 50],
-        "PICK_WIRE1": [75, 79],
+        "SAFE_PICK_WIRE1": [35, 50],
+        "PICK_WIRE1": [35, 79],
+        "PLACE_WIRE1": [35, 50],
         "FINISH_ROUTINE":[111, 40]
     }
     ARM_STATES = {
@@ -120,15 +118,22 @@ class ElectronicsStation:
         "PUSH_DRIVERS": ["L", 248.399551, 7.757665, 32.735741, 179.882678, 3.054667, 1.653728, 40, "B"],
         "AFTER_PUSH_DRIVERS": ["L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 20, "B"],
 
-        "BEFORE_PICK_WIRES": ["J", 57.3, -32, -18.2, 2.1, 45, 54.5, 20],
-        "BEFORE_PICK_WIRE1": ["J", 70.634294, 12.353257, -60.882495, 2.062132, 50.81746, 66.416007, 15],
-        "SAFE_PICK_WIRE1": ["L", 220.936737, 629.924377, 176.499542, 179.51524, 1.531172, 1.239193, 10, "W"],
-        "PICK_WIRE1": ["L", 220.994293, 650.904724, 172.139374, 179.541081, 1.485393, 1.286863, 10, "W"],
-        "AFTER_PICK_WIRE1": ["L", 221.032562, 609.548096, 172.524368, 179.596314, 1.440416, 1.361004, 10, "W"],
-        "BEFORE_PLACE_WIRE1": ["J", -5.077323, -38.171021, -18.663928, 3.578236, 57.185714, -7.348642, 10],
-        "SAFE_PLACE_WIRE1": [],
-        "PLACE_WIRE1": [],
-        "AFTER_PLACE_WIRE1": [],
+        #"BEFORE_PICK_WIRES": ["J", 57.3, -32, -18.2, 2.1, 45, 54.5, 20],
+        #"BEFORE_PICK_WIRE1": ["J", 70.634294, 12.353257, -60.882495, 2.062132, 50.81746, 66.416007, 15],
+        #"BEFORE_PICK_WIRE1": ["J", 76.093264, 42.510718, -126.885171, -9.077256, 125.766757, 73.792724, 10],
+        #"SAFE_PICK_WIRE1": ["L", 219.537613, 670.333435, 174.527405, 176.586337, 1.221202, 1.407585, 30, "W"],
+        #"SAFE_PICK_WIRE1": ["L", 225.142166, 681.077942, 178.028397, 154.651049, 1.35516, 1.25833, 10, "W"],
+        #"PICK_WIRE1": ["L", 220.948059, 694.600708, 171.68692, 177.340407, 0.859036, 1.735317, 10, "W"],
+        #"PICK_WIRE1": ["L", 222.756866, 695.215149, 174.245514, 154.694021, 1.333731, 1.273742, 10, "W"],
+        #"AFTER_PICK_WIRE1": ["L", 221.032562, 609.548096, 172.524368, 179.596314, 1.440416, 1.361004, 10, "W"],
+        #"AFTER_PICK_WIRE1": ["L", 222.9944, 666.589355, 174.52182, 154.75739, 1.312417, 1.320668, 10, "W"],
+        #"BEFORE_PLACE_WIRE1": ["J", -5.077323, -38.171021, -18.663928, 3.578236, 57.185714, -7.348642, 15],
+        #"SAFE_PLACE_WIRE1": ["L", 250.717026, 59.622017, 76.223236, -179.896372, 3.019029, 1.05917, 10, "W"],
+        #"SAFE_PLACE_WIRE1_2": ["L", 247.475479, 62.61705, 66.395164, -179.896372, 2.921111, -0.933864, 10, "W"],
+        #"PLACE_WIRE1": ["L", 248.408875, 62.470318, 62.379288, -179.65573, 3.821399, -0.888543, 10, "W"],
+        #"PLACE_WIRE1": ["L", 247.6, 61.9, 63.6, -179.7, -2, 7.9, 10, "W"],
+        #"AFTER_PLACE_WIRE1": ["L", 248.408875, 62.470318, 83.379288, -179.65573, 3.821399, -0.888543, 10, "W"],
+
         "FINISH_ROUTINE": ["J", 0, -70, -20, 0, 90, 0, 30]
     }
     def __init__(self):
@@ -138,7 +143,7 @@ class ElectronicsStation:
             self.plc = snap7.client.Client()
             self.plc.connect(PLC_IP, RACK, SLOT)
             self.plc_action_data = None
-       # self.plc_light_data = None
+            self.plc_light_data = None
 
         # Arm configs
         self.arm = XArmAPI(XARM_IP, do_not_open=True)
@@ -149,7 +154,10 @@ class ElectronicsStation:
         self.arm.set_mode(0) # Position control
         self.arm.set_state(state=0)
 
-        self.arduino_counter = 0
+        self.arduino_counter = 5
+        self.shield_counter = 5
+        self.driver_counter = 10
+        self.fred_counter = 0
 
         self.list_states = list(self.ARM_STATES.keys())
 
@@ -165,22 +173,53 @@ class ElectronicsStation:
     def run(self):
         """Main loop of the electronics station"""
         if self.current_state == "HOME":
-           # self.plc_light_data = bytearray(0b00001000)
-            #self.plc.db_write(1,0, self.plc_light_data) 
+            self.plc_light_data = self.plc.db_read(1, 0, 14)
+            self.plc_light_data[0] = bytearray(0b00001000)
+            self.plc.db_write(1,0, self.plc_light_data) 
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             if USE_PLC:
                 self.current_state = "WAIT_SENSOR"
             else:
-                #self.current_state = "BEFORE_PICK_ARDUINO"
+                self.current_state = "BEFORE_PICK_ARDUINO"
                 #self.current_state = "BEFORE_PICK_DRIVER1"
-                self.current_state = "BEFORE_PICK_WIRES"
+                #self.current_state = "BEFORE_PICK_WIRES"
 
         elif self.current_state == "WAIT_SENSOR":
             self.plc_action_data = self.plc.db_read(1, 0, 14)
             if self.plc_action_data[0] == 0b00000001:
                 time.sleep(2)
                 self.current_state = "BEFORE_PICK_ARDUINO"
+
+        elif self.current_state == "AFTER_PICK_ARDUINO":
+            self.send_arm_state(self.current_state)
+            self.arduino_counter -= 1
+            self.send_counter_data(self.arduino_counter, 4, 5)
+            self.current_state = "BEFORE_PLACE_ARDUINO"
+        
+        elif self.current_state == "AFTER_PICK_SHIELD":
+            self.send_arm_state(self.current_state)
+            self.shield_counter -= 1
+            self.send_counter_data(self.shield_counter, 6, 7)
+            self.current_state = "AFTER_PICK_SHIELD_1"
+
+        elif self.current_state == "AFTER_PICK_DRIVER1":
+            self.send_arm_state(self.current_state)
+            self.driver_counter -= 1
+            self.send_counter_data(self.driver_counter, 8, 9)
+            self.current_state = "AFTER_PICK_DRIVER1_2"
+        
+        elif self.current_state == "AFTER_PICK_DRIVER2":
+            self.send_arm_state(self.current_state)
+            self.driver_counter -= 1
+            self.send_counter_data(self.driver_counter, 8, 9)
+            self.current_state = "AFTER_PICK_DRIVER2_2"
+        
+        elif self.current_state == "AFTER_PUSH_DRIVERS":
+            self.send_arm_state(self.current_state)
+            self.fred_counter += 1
+            self.send_counter_data(self.fred_counter, 2, 3)
+            self.current_state = "HOME"
    
         elif self.current_state == "FINISH_ROUTINE":
             self.plc_action_data = self.plc.db_read(1, 0, 2)
@@ -211,6 +250,13 @@ class ElectronicsStation:
             self.current_state = self.list_states[self.list_states.index(self.current_state) + 1]
 
         time.sleep(0.1)
+
+    def send_counter_data(self, data, bit1, bit2):
+        """Send counter data to the PLC datablocks"""
+        datatmp = bytearray(data.to_bytes(2,"big"))
+        self.plc_action_data[bit1] = datatmp[0]
+        self.plc_action_data[bit2] = datatmp[1]
+        self.plc.db_write(1, 0, self.plc_action_data)
 
     def send_gripper_state(self, state):
         """Send the data to the ESP32 via socket"""
