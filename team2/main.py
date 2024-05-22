@@ -45,15 +45,15 @@ class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
-        "HOME": [100, 0],
+        "HOME": [85, 0], #100
         "PICK_ARDUINO": [31, 0],
-        "PLACE_ARDUINO": [111, 0],
+        "PLACE_ARDUINO": [85, 0], #111
         "PICK_SHIELD": [45, 0],
-        "PLACE_SHIELD":[111, 0],
-        "PUSH_SHIELD": [111, 0],
-        "PICK_DRIVER1": [111, 40],
-        "PLACE_DRIVER1": [111, 0],
-        "PICK_DRIVER2": [111, 40],
+        "PLACE_SHIELD":[85, 0], #111
+        "PUSH_SHIELD": [85, 0], #111
+        "PICK_DRIVER1": [85, 40], #111
+        "PLACE_DRIVER1": [85, 0], #111
+        "PICK_DRIVER2": [85, 40], #111
         "PLACE_DRIVER2": [75, 0],
         "PUSH_DRIVERS": [75, 40],
         "PICK_ASSEMBLY": [42, 0],
@@ -61,62 +61,62 @@ class ElectronicsStation:
         "SAFE_PICK_WIRE1": [35, 50],
         "PICK_WIRE1": [35, 79],
         "PLACE_WIRE1": [35, 50],
-        "FINISH_ROUTINE":[111, 40]
+        "FINISH_ROUTINE":[85, 40] #111
     }
     ARM_STATES = {
         # [x, y, z, roll, pitch, yaw, speed]
-        "HOME": ["J", 0, -70, -20, 0, 90, 0, 30],
-        "BEFORE_PICK_ARDUINO": ["J", 84.4, -4.4, -17.2, -9.2, -19.4, 94.4, 40],
-        "PICK_ARDUINO": ["L", 11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 30, "D"],
-        "AFTER_PICK_ARDUINO": ["L", 17.6, 349.4, 241, -139.1, 0.2, -0.8, 40, "D"],
-        "BEFORE_PLACE_ARDUINO": ["J", 60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 50],
-        "SAFE_PLACE_ARDUINO": ["J", 59.7, -11, -24.9, 0.4, 37.3, 63.1, 35],
-        "PLACE_ARDUINO": ["J", 60, -7.8, -23.8, 0.4, 32.3, 61.4, 15],
-        "AFTER_PLACE_ARDUINO": ["J", 60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 30],
-        "BEFORE_PICK_SHIELD": ["J", 111.5, 1.8, -17, 23.6, -14.9, -92.3, 40],
-        "BEFORE_PICK_SHIELD_2": ["J", 107.7, 9.5, -26.5, 23.5, -7.9, -95.3, 20],
-        "PICK_SHIELD": ["L", -90.355515, 463.406311, 76.797081, 149.918246, 1.207738, -179.569843, 10, "B"],
-        "AFTER_PICK_SHIELD": ["L", -96.649063, 441.632538, 119.793488, 146.556072, -0.534512, -178.378778, 10, "B"],
-        "AFTER_PICK_SHIELD_1": ["J", 110.4, -6.9, -17.5, 35.8, -4.4, -108.4, 20],
-        "BEFORE_PLACE_SHIELD": ["J", 55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 30],
-        "SAFE_PLACE_SHIELD": ["J", 59.045994, -16.6568, -18.754456, 8.428725, 30.932788, 52.975506, 10],
-        "PLACE_SHIELD": ["L", 166.866608, 238.500671, 104.299072, -172.7454, -0.211651, 0.152178, 10, "B"],
-        "AFTER_PLACE_SHIELD": ["L", 165.455994, 238.415649, 134.730347, -171.572384, -1.126435, -1.054987, 10, "B"],
-        "BEFORE_PUSH_SHIELD": ["J", 56.120471, -16.822499, -16.341616, 4.443975, 35.192386, 53.043229, 10],
-        "PUSH_SHIELD": ["L", 163.246918, 203.765717, 91.109421, 179.887491, 3.111562, -0.49303, 50, "B"],
-        "AFTER_PUSH_SHIELD": ["L", 158.322281, 203.671539, 110.043457, -178.116822, 1.237875, 0.805865, 50, "B"],
-        "PUSH_SHIELD_1": ["L", 162.38858, 213.386688, 91.28334, 178.692702, 3.040229, -0.224829, 50, "B"],
-        "AFTER_PUSH_SHIELD_1": ["L", 158.322281, 203.671539, 130.043457, -178.116822, 1.237875, 0.805865, 20, "B"],
-        "BEFORE_PICK_ASSEMBLY": ["J", 50.5, -26.2, -14.2, 1.6, 42.4, 229.4, 20],
-        "PICK_ASSEMBLY": ["L", 165.6, 242.8, 96.7, 0.1, -179.1, -0.1, 10, "B"],
-        "AFTER_PICK_ASSEMBLY": ["L", 165.6, 242.8, 116.7, 0.1, -179.1, -0.1, 10, "B"],
-        "BEFORE_PLACE_ASSEMBLY": ["J", 2.5, -43.3, -12.8, 1, 57.1, 181, 20],
-        "SAFE_PLACE_ASSEMBLY": ["L", 244.305725, 40.191769, 62.90258, -179.99916, -4.214105, 178.844708, 50, "B"],
-        "PLACE_ASSEMBLY": ["L", 243.833069, 40.104698, 37.80267, -179.984779, -3.509137, 178.904066, 10, "B"],
-        "AFTER_PLACE_ASSEMBLY": ["L", 244.305725, 40.191769, 67.90258, -179.99916, -4.214105, 178.844708, 20, "B"],
+        "HOME": ["G","J", 0, -70, -20, 0, 90, 0, 30],
+        "BEFORE_PICK_ARDUINO": ["R","J", 84.4, -4.4, -17.2, -9.2, -19.4, 94.4, 40],
+        "PICK_ARDUINO": ["Y","L", 11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 30, "D"],
+        "AFTER_PICK_ARDUINO": ["Y","L", 17.6, 349.4, 241, -139.1, 0.2, -0.8, 40, "D"],
+        "BEFORE_PLACE_ARDUINO": ["R","J", 60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 50],
+        "SAFE_PLACE_ARDUINO": ["Y","J", 59.7, -11, -24.9, 0.4, 37.3, 63.1, 35],
+        "PLACE_ARDUINO": ["Y","J", 60, -7.8, -23.8, 0.4, 32.3, 61.4, 15],
+        "AFTER_PLACE_ARDUINO": ["Y","J", 60.1, -21.4, -24.4, 2.7, 44.8, 60.5, 30],
+        "BEFORE_PICK_SHIELD": ["R","J", 111.5, 1.8, -17, 23.6, -14.9, -92.3, 40],
+        "BEFORE_PICK_SHIELD_2": ["Y","J", 107.7, 9.5, -26.5, 23.5, -7.9, -95.3, 20],
+        "PICK_SHIELD": ["Y","L", -90.355515, 463.406311, 76.797081, 149.918246, 1.207738, -179.569843, 10, "B"],
+        "AFTER_PICK_SHIELD": ["Y","L", -96.649063, 441.632538, 119.793488, 146.556072, -0.534512, -178.378778, 10, "B"],
+        "AFTER_PICK_SHIELD_1": ["Y","J", 110.4, -6.9, -17.5, 35.8, -4.4, -108.4, 20],
+        "BEFORE_PLACE_SHIELD": ["R","J", 55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 30],
+        "SAFE_PLACE_SHIELD": ["Y","J", 59.045994, -16.6568, -18.754456, 8.428725, 30.932788, 52.975506, 10],
+        "PLACE_SHIELD": ["Y","L", 166.866608, 238.500671, 104.299072, -172.7454, -0.211651, 0.152178, 10, "B"],
+        "AFTER_PLACE_SHIELD": ["Y","L", 165.455994, 238.415649, 134.730347, -171.572384, -1.126435, -1.054987, 10, "B"],
+        "BEFORE_PUSH_SHIELD": ["Y","J", 56.120471, -16.822499, -16.341616, 4.443975, 35.192386, 53.043229, 10],
+        "PUSH_SHIELD": ["Y","L", 163.246918, 203.765717, 91.109421, 179.887491, 3.111562, -0.49303, 50, "B"],
+        "AFTER_PUSH_SHIELD": ["Y","L", 158.322281, 203.671539, 110.043457, -178.116822, 1.237875, 0.805865, 50, "B"],
+        "PUSH_SHIELD_1": ["Y","L", 162.38858, 213.386688, 91.28334, 178.692702, 3.040229, -0.224829, 50, "B"],
+        "AFTER_PUSH_SHIELD_1": ["Y","L", 158.322281, 203.671539, 130.043457, -178.116822, 1.237875, 0.805865, 20, "B"],
+        "BEFORE_PICK_ASSEMBLY": ["Y","J", 50.5, -26.2, -14.2, 1.6, 42.4, 229.4, 20],
+        "PICK_ASSEMBLY": ["Y","L", 165.6, 242.8, 96.7, 0.1, -179.1, -0.1, 10, "B"],
+        "AFTER_PICK_ASSEMBLY": ["Y","L", 165.6, 242.8, 116.7, 0.1, -179.1, -0.1, 10, "B"],
+        "BEFORE_PLACE_ASSEMBLY": ["R","J", 2.5, -43.3, -12.8, 1, 57.1, 181, 20],
+        "SAFE_PLACE_ASSEMBLY": ["Y","L", 244.305725, 40.191769, 62.90258, -179.99916, -4.214105, 178.844708, 50, "B"],
+        "PLACE_ASSEMBLY": ["Y","L", 243.833069, 40.104698, 37.80267, -179.984779, -3.509137, 178.904066, 10, "B"],
+        "AFTER_PLACE_ASSEMBLY": ["Y","L", 244.305725, 40.191769, 67.90258, -179.99916, -4.214105, 178.844708, 20, "B"],
 
-        "BEFORE_PICK_DRIVER1": ["J", 57.3, -32, -18.2, 2.1, 45, 54.5, 30],
-        "BEFORE_PICK_DRIVER1_2": ["J", 62.9, 25.2, -86.5, -1.6, 64.8, 64.1, 20],
-        "BEFORE_PICK_DRIVER1_3": ["J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
-        "PICK_DRIVER1": ["J", 67.7, 53.6, -111.5, -23.3, 117, 65.6, 5],
-        "AFTER_PICK_DRIVER1": ["J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
-        "AFTER_PICK_DRIVER1_2": ["J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20],
-        "BEFORE_PLACE_DRIVER1": ["J", 43.1, 6.7, -35, -45.8, 105.3, 61.8, 15],
-        "PLACE_DRIVER1": ["L", 234.400604, 63.246693, 49.849049, 93.624226, 7.684223, -2.34397, 10, "W"],
-        "AFTER_PLACE_DRIVER1": ["L", 234.400604, 63.246693, 59.849049, 93.624226, 7.684223, -2.34397, 10, "W"],
-        "AFTER_PLACE_DRIVER1_2": ["J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20],
-        "BEFORE_PICK_DRIVER2": ["J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
-        "PICK_DRIVER2": ["J", 67.7, 53.6, -111.5, -23.3, 117, 65.6, 5],
+        "BEFORE_PICK_DRIVER1": ["R","J", 57.3, -32, -18.2, 2.1, 45, 54.5, 30],
+        "BEFORE_PICK_DRIVER1_2": ["R","J", 62.9, 25.2, -86.5, -1.6, 64.8, 64.1, 20],
+        "BEFORE_PICK_DRIVER1_3": ["Y","J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
+        "PICK_DRIVER1": ["Y","J", 67.7, 53.6, -111.5, -23.3, 117, 65.6, 5],
+        "AFTER_PICK_DRIVER1": ["Y","J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
+        "AFTER_PICK_DRIVER1_2": ["R","J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20],
+        "BEFORE_PLACE_DRIVER1": ["R","J", 43.1, 6.7, -35, -45.8, 105.3, 61.8, 15],
+        "PLACE_DRIVER1": ["Y","L", 234.400604, 63.246693, 49.849049, 93.624226, 7.684223, -2.34397, 10, "W"],
+        "AFTER_PLACE_DRIVER1": ["Y","L", 234.400604, 63.246693, 59.849049, 93.624226, 7.684223, -2.34397, 10, "W"],
+        "AFTER_PLACE_DRIVER1_2": ["R","J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20],
+        "BEFORE_PICK_DRIVER2": ["R","J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
+        "PICK_DRIVER2": ["Y","J", 67.7, 53.6, -111.5, -23.3, 117, 65.6, 5],
 
-        "AFTER_PICK_DRIVER2": ["J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
-        "AFTER_PICK_DRIVER2_2": ["J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20],
-        "BEFORE_PLACE_DRIVER2": ["J", 43.2, -1.6, -31.3, -49.1, 110.7, 59.1, 15],
-        "PLACE_DRIVER2": ["L", 234.031128, 43.744728, 49.815109, 92.178023, 6.663041, -1.457261, 10, "W"],
-        "AFTER_PLACE_DRIVER2": ["L", 234.031128, 43.744728, 90.815109, 92.178023, 6.663041, -1.457261, 10, "W"],
-        "BEFORE_PUSH_DRIVERS": ["J", 10.9, -34.3, -10.9, 0.5, 48.2, 8.9, 20],
-        "SAFE_PUSH_DRIVERS": ["L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 20, "B"],
-        "PUSH_DRIVERS": ["L", 248.399551, 7.757665, 32.735741, 179.882678, 3.054667, 1.653728, 40, "B"],
-        "AFTER_PUSH_DRIVERS": ["L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 20, "B"],
+        "AFTER_PICK_DRIVER2": ["Y","J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
+        "AFTER_PICK_DRIVER2_2": ["R","J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20],
+        "BEFORE_PLACE_DRIVER2": ["R","J", 43.2, -1.6, -31.3, -49.1, 110.7, 59.1, 15],
+        "PLACE_DRIVER2": ["Y","L", 234.031128, 43.744728, 49.815109, 92.178023, 6.663041, -1.457261, 10, "W"],
+        "AFTER_PLACE_DRIVER2": ["Y","L", 234.031128, 43.744728, 90.815109, 92.178023, 6.663041, -1.457261, 10, "W"],
+        "BEFORE_PUSH_DRIVERS": ["Y","J", 10.9, -34.3, -10.9, 0.5, 48.2, 8.9, 20],
+        "SAFE_PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 20, "B"],
+        "PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 32.735741, 179.882678, 3.054667, 1.653728, 40, "B"],
+        "AFTER_PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 20, "B"],
 
         #"BEFORE_PICK_WIRES": ["J", 57.3, -32, -18.2, 2.1, 45, 54.5, 20],
         #"BEFORE_PICK_WIRE1": ["J", 70.634294, 12.353257, -60.882495, 2.062132, 50.81746, 66.416007, 15],
@@ -134,7 +134,7 @@ class ElectronicsStation:
         #"PLACE_WIRE1": ["L", 247.6, 61.9, 63.6, -179.7, -2, 7.9, 10, "W"],
         #"AFTER_PLACE_WIRE1": ["L", 248.408875, 62.470318, 83.379288, -179.65573, 3.821399, -0.888543, 10, "W"],
 
-        "FINISH_ROUTINE": ["J", 0, -70, -20, 0, 90, 0, 30]
+        "FINISH_ROUTINE": ["G","J", 0, -70, -20, 0, 90, 0, 30]
     }
     def __init__(self):
         """Initialize communications"""
@@ -172,10 +172,11 @@ class ElectronicsStation:
     
     def run(self):
         """Main loop of the electronics station"""
+  
         if self.current_state == "HOME":
-            self.plc_light_data = self.plc.db_read(1, 0, 14)
-            self.plc_light_data[0] = bytearray(0b00001000)
-            self.plc.db_write(1,0, self.plc_light_data) 
+            # self.plc_light_data = self.plc.db_read(2, 0, 2)
+            # self.plc_light_data[0] = 0b00000001
+            # self.plc.db_write(2,0, self.plc_light_data) 
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             if USE_PLC:
@@ -183,14 +184,14 @@ class ElectronicsStation:
             else:
                 self.current_state = "BEFORE_PICK_ARDUINO"
                 #self.current_state = "BEFORE_PICK_DRIVER1"
-                #self.current_state = "BEFORE_PICK_WIRES"
+                #self.current_state = "BEFORE_PICK_WIRES"     
 
         elif self.current_state == "WAIT_SENSOR":
             self.plc_action_data = self.plc.db_read(1, 0, 14)
             if self.plc_action_data[0] == 0b00000001:
                 time.sleep(2)
                 self.current_state = "BEFORE_PICK_ARDUINO"
-
+                         
         elif self.current_state == "AFTER_PICK_ARDUINO":
             self.send_arm_state(self.current_state)
             self.arduino_counter -= 1
@@ -275,11 +276,26 @@ class ElectronicsStation:
 
     def send_arm_state(self, state, lineal=False):
         """Send the data to the xArm"""
-        x, y, z, roll, pitch, yaw, speed = self.ARM_STATES[state][1:8]
-        lineal = self.ARM_STATES[state][0] == "L"
+        x, y, z, roll, pitch, yaw, speed = self.ARM_STATES[state][2:9]
+        light = self.ARM_STATES[state][0] 
+        lineal = self.ARM_STATES[state][1] == "L"
         print(f"Sending arm to state: {state}")
+
+        if light == "R":
+            self.plc_light_data = self.plc.db_read(2, 0, 2)
+            self.plc_light_data[0] = 0b00000010
+            self.plc.db_write(2,0, self.plc_light_data)
+        elif light == "Y":
+            self.plc_light_data = self.plc.db_read(2, 0, 2)
+            self.plc_light_data[0] = 0b00000100
+            self.plc.db_write(2,0, self.plc_light_data)
+        else:
+            self.plc_light_data = self.plc.db_read(2, 0, 2)
+            self.plc_light_data[0] = 0b00000001
+            self.plc.db_write(2,0, self.plc_light_data)
+
         if lineal:
-            tcp = self.ARM_STATES[state][8]
+            tcp = self.ARM_STATES[state][9]
             if tcp == "B":
                 self.arm.set_tcp_offset(BOARD_TCP)
             elif tcp == "W":
@@ -291,7 +307,9 @@ class ElectronicsStation:
             self.arm.set_position(x=x, y=y, z=z, roll=roll, pitch=pitch, yaw=yaw, speed=speed, wait=True)
         else:
             self.arm.set_servo_angle(angle=[x, y, z, roll, pitch, yaw], speed=speed, wait=True)
-    
+        
+
+
     def static_speech_feedback(self, state):
         """Play the static audio files with feedback"""
         if not USE_SPEECH:
