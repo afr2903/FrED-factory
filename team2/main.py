@@ -4,7 +4,7 @@ Main script to run the electronics station assembly proccess
 """
 # Constants for features being used
 USE_PLC = True
-USE_SPEECH = False
+USE_SPEECH = True
 USE_ARM = True
 USE_GRIPPER = True
 
@@ -175,7 +175,7 @@ class ElectronicsStation:
         # Speech feedback
         if USE_SPEECH:
             pygame.mixer.init()
-        self.current_state = "INSPECTION"
+        self.current_state = "HOME"
     
     def run(self):
         """Main loop of the electronics station"""
