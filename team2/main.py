@@ -181,9 +181,6 @@ class ElectronicsStation:
         """Main loop of the electronics station"""
   
         if self.current_state == "HOME":
-            # self.plc_light_data = self.plc.db_read(2, 0, 2)
-            # self.plc_light_data[0] = 0b00000001
-            # self.plc.db_write(2,0, self.plc_light_data) 
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             if USE_PLC:
@@ -225,22 +222,24 @@ class ElectronicsStation:
         
    
         elif self.current_state == "INSPECTION":
-            #self.static_speech_feedback(self.current_state)
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
+            self.static_speech_feedback(self.current_state)
 
             self.arm.set_cgpio_digital(2, 1, delay_sec=0)
             self.get_camera_state()
-            
             time.sleep(2)
             self.arm.set_cgpio_digital(2, 0, delay_sec=0)
 
             if self.ans == 1:
+                self.static_speech_feedback("PASS_INSPECTION")
                 print("FrED is ready")
-                # self.fred_counter += 1
-                # self.send_counter_data(self.fred_counter, 2, 3)
+                self.fred_counter += 1
+                self.send_counter_data(self.fred_counter, 2, 3)
             else:
+                self.static_speech_feedback("FAILED_INSPECTION")
                 print("FrED is not ready")
+
 
             self.current_state = "FINISH_ROUTINE"
   
