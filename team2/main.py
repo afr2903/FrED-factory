@@ -4,7 +4,7 @@ Main script to run the electronics station assembly proccess
 """
 # Constants for features being used
 USE_PLC = True
-USE_SPEECH = True
+USE_SPEECH = False
 USE_ARM = True
 USE_GRIPPER = True
 
@@ -28,6 +28,8 @@ if USE_SPEECH:
     import pygame
 
 # IP addresses
+HOST = "192.168.0.128"  # The server's hostname or IP address
+PORT = 20000  # The port used by the server
 PLC_IP = '192.168.1.101'
 XARM_IP = '192.168.1.201'
 UDP_IP = "192.168.2.23"
@@ -61,6 +63,7 @@ class ElectronicsStation:
         "SAFE_PICK_WIRE1": [35, 50],
         "PICK_WIRE1": [35, 79],
         "PLACE_WIRE1": [35, 50],
+        "INSPECTION": [21, 40],
         "FINISH_ROUTINE":[85, 40] #111
     }
     ARM_STATES = {
@@ -121,7 +124,7 @@ class ElectronicsStation:
         "SAFE_PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 20, "B"],
         "PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 27.235741, 179.882678, 3.054667, 1.653728, 40, "B"],
         "AFTER_PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 20, "B"],
-
+        "INSPECTION": ["Y", "J", 21.5, -63.1, -33.1, 0.2, 96.7, 21.5, 20],
         #"BEFORE_PICK_WIRES": ["J", 57.3, -32, -18.2, 2.1, 45, 54.5, 20],
         #"BEFORE_PICK_WIRE1": ["J", 70.634294, 12.353257, -60.882495, 2.062132, 50.81746, 66.416007, 15],
         #"BEFORE_PICK_WIRE1": ["J", 76.093264, 42.510718, -126.885171, -9.077256, 125.766757, 73.792724, 10],
@@ -172,7 +175,7 @@ class ElectronicsStation:
         # Speech feedback
         if USE_SPEECH:
             pygame.mixer.init()
-        self.current_state = "HOME"
+        self.current_state = "INSPECTION"
     
     def run(self):
         """Main loop of the electronics station"""
@@ -220,12 +223,27 @@ class ElectronicsStation:
             self.send_counter_data(self.driver_counter, 8, 9)
             self.current_state = "AFTER_PICK_DRIVER2_2"
         
-        elif self.current_state == "AFTER_PUSH_DRIVERS":
-            self.send_arm_state(self.current_state)
-            self.fred_counter += 1
-            self.send_counter_data(self.fred_counter, 2, 3)
-            self.current_state = "FINISH_ROUTINE"
    
+        elif self.current_state == "INSPECTION":
+            #self.static_speech_feedback(self.current_state)
+            self.send_arm_state(self.current_state)
+            self.send_gripper_state(self.current_state)
+
+            self.arm.set_cgpio_digital(2, 1, delay_sec=0)
+            self.get_camera_state()
+            
+            time.sleep(2)
+            self.arm.set_cgpio_digital(2, 0, delay_sec=0)
+
+            if self.ans == 1:
+                print("FrED is ready")
+                # self.fred_counter += 1
+                # self.send_counter_data(self.fred_counter, 2, 3)
+            else:
+                print("FrED is not ready")
+
+            self.current_state = "FINISH_ROUTINE"
+  
         elif self.current_state == "FINISH_ROUTINE":
             self.plc_action_data = self.plc.db_read(1, 0, 2)
             self.static_speech_feedback(self.current_state)
@@ -256,6 +274,28 @@ class ElectronicsStation:
             self.current_state = self.list_states[self.list_states.index(self.current_state) + 1]
 
         time.sleep(0.1)
+
+
+
+    def get_camera_state(self):
+        self.ans = 0
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((HOST, PORT))
+            s.settimeout(None)
+            s.sendall(b"cmd Online")
+            s.sendall(b"cmd trigger")
+
+            data = s.recv(24)
+
+        print(f"Received2 {data!r}")
+
+        str1 = data.decode('UTF-8')
+        self.ans = float(str1)
+
+
+
+
 
     def send_counter_data(self, data, bit1, bit2):
         """Send counter data to the PLC datablocks"""
