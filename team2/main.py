@@ -80,8 +80,8 @@ class ElectronicsStation:
         "BEFORE_PICK_SHIELD": ["R","J", 111.5, 1.8, -17, 23.6, -14.9, -92.3, 50],
         "BEFORE_PICK_SHIELD_2": ["Y","J", 107.7, 9.5, -26.5, 23.5, -7.9, -95.3, 40],
         "PICK_SHIELD": ["Y","L", -90.355515, 463.406311, 76.797081, 149.918246, 1.207738, -179.569843, 10, "B"],
-        "AFTER_PICK_SHIELD": ["Y","L", -96.649063, 441.632538, 119.793488, 146.556072, -0.534512, -178.378778, 30, "B"],
-        "AFTER_PICK_SHIELD_1": ["Y","J", 110.4, -6.9, -17.5, 35.8, -4.4, -108.4, 30],
+        "AFTER_PICK_SHIELD": ["Y","L", -96.649063, 441.632538, 119.793488, 146.556072, -0.534512, -178.378778, 60, "B"],
+        "AFTER_PICK_SHIELD_1": ["Y","J", 110.4, -6.9, -17.5, 35.8, -4.4, -108.4, 50],
         "BEFORE_PLACE_SHIELD": ["R","J", 55.4, -27.1, -20.3, 5.7, 40.5, 54.4, 40],
         "SAFE_PLACE_SHIELD": ["Y","J", 59.045994, -16.6568, -18.754456, 8.428725, 30.932788, 52.975506, 20],
         #"PLACE_SHIELD": ["Y","L", 166.866608, 238.500671, 104.299072, -172.7454, -0.211651, 0.152178, 10, "B"],
@@ -237,6 +237,8 @@ class ElectronicsStation:
                 self.plc_action_data[12] = 0b00000001
                 self.plc.db_write(1,0, self.plc_action_data)
                 
+                self.static_speech_feedback("FINISH_ROUTINE")
+                print("FrED is ready")
                 self.fred_counter += 1
                 self.send_counter_data(self.fred_counter, 2, 3)
                 print("FrED is ready")
@@ -253,7 +255,7 @@ class ElectronicsStation:
   
         elif self.current_state == "FINISH_ROUTINE":
             self.plc_action_data = self.plc.db_read(1, 0, 2)
-            self.static_speech_feedback(self.current_state)
+            #self.static_speech_feedback(self.current_state)
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             if self.plc_action_data[0] == 0b00000000:
