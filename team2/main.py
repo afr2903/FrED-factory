@@ -219,6 +219,7 @@ class ElectronicsStation:
             self.send_arm_state(self.current_state)
             self.send_gripper_state(self.current_state)
             self.static_speech_feedback(self.current_state)
+            time.sleep(2)
 
             self.arm.set_cgpio_digital(2, 1, delay_sec=0)
             self.get_camera_state()
@@ -231,7 +232,7 @@ class ElectronicsStation:
                 self.plc_action_data[12] = 0b00000001
                 self.plc.db_write(1,0, self.plc_action_data)
                 
-                self.static_speech_feedback("FINISH_ROUTINE")
+                #self.static_speech_feedback("FINISH_ROUTINE")
                 print("FrED is ready")
                 self.fred_counter += 1
                 self.send_counter_data(self.fred_counter, 2, 3)
