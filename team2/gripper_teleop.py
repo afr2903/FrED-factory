@@ -10,7 +10,7 @@ MESSAGE = ""               # Initialize message
 WIRE_LOWER_LIMIT = 0
 WIRE_UPPER_LIMIT = 79
 BOARD_LOWER_LIMIT = 21
-BOARD_UPPER_LIMIT = 111
+BOARD_UPPER_LIMIT = 85 #111
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 gui = Tk()
@@ -43,6 +43,9 @@ if __name__ == '__main__':
 
     wire_slider = Scale(gui, from_=WIRE_LOWER_LIMIT, to=WIRE_UPPER_LIMIT, orient=HORIZONTAL, length=500, resolution=1)
     wire_slider.pack()
+
+    board_slider.set( (BOARD_UPPER_LIMIT - BOARD_LOWER_LIMIT) / 2)
+    wire_slider.set( (WIRE_UPPER_LIMIT - WIRE_LOWER_LIMIT) / 2)
 
     last_board_position = board_slider.get()
     last_wire_position = wire_slider.get()
