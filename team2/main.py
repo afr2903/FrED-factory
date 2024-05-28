@@ -55,9 +55,9 @@ class ElectronicsStation:
         "PICK_SHIELD": [42, 0],
         "PLACE_SHIELD":[85, 0], #111
         "PUSH_SHIELD": [85, 0], #111
-        "PICK_DRIVER1": [85, 40], #111
+        "PICK_DRIVER1": [85, 36], #111
         "PLACE_DRIVER1": [85, 0], #111
-        "PICK_DRIVER2": [85, 40], #111
+        "PICK_DRIVER2": [85, 36], #111
         "PLACE_DRIVER2": [75, 0],
         "PUSH_DRIVERS": [75, 40],
         "PICK_ASSEMBLY": [42, 0],
@@ -112,24 +112,28 @@ class ElectronicsStation:
         "BEFORE_PICK_DRIVER1": ["R","J", 57.3, -32, -18.2, 2.1, 45, 54.5, 30],
         "BEFORE_PICK_DRIVER1_2": ["R","J", 62.9, 25.2, -86.5, -1.6, 64.8, 64.1, 30],
         "BEFORE_PICK_DRIVER1_3": ["Y","J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 20],
-        "PICK_DRIVER1": ["Y","J", 67.7, 53.6, -111.5, -23.3, 117, 65.6, 10],
+        #"PICK_DRIVER1": ["Y","J", 67.7, 53.6, -111.5, -23.3, 117, 65.6, 10],
+        "PICK_DRIVER1": ["Y", "L", 254.388977, 494.096527, 16.190947, 115.929988, 3.396551, 0.216693, 10, "W"],
         "AFTER_PICK_DRIVER1": ["Y","J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 45],
         "AFTER_PICK_DRIVER1_2": ["R","J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 45],
         "BEFORE_PLACE_DRIVER1": ["R","J", 43.1, 6.7, -35, -45.8, 105.3, 61.8, 15],
-        "PLACE_DRIVER1": ["Y", "L", 235.664642, 64.211578, 46.34708, 95.117239, 8.211287, -2.162858, 10, "W"],
+        #"PLACE_DRIVER1": ["Y", "L", 235.664642, 64.211578, 46.34708, 95.117239, 8.211287, -2.162858, 10, "W"],
+        "PLACE_DRIVER1": ["Y", "L", 235.384155, 65.557449, 40.092468, 95.103488, 8.269958, -2.154608, 10, "W"],
         "AFTER_PLACE_DRIVER1": ["Y","L", 234.400604, 63.246693, 59.849049, 93.624226, 7.684223, -2.34397, 30, "W"],
         "AFTER_PLACE_DRIVER1_2": ["R","J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 20],
 
         "BEFORE_PICK_DRIVER2": ["R","J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 15],
-        "PICK_DRIVER2": ["Y","J", 67.7, 53.6, -111.5, -23.3, 117, 65.6, 10],
+        #"PICK_DRIVER2": ["Y","J", 67.7, 53.6, -111.5, -23.3, 117, 65.6, 10],
+        "PICK_DRIVER2": ["Y", "L", 254.388977, 494.096527, 16.190947, 115.929988, 3.396551, 0.216693, 10, "W"],
         "AFTER_PICK_DRIVER2": ["Y","J", 66.9, 51.7, -111, -22.5, 119.8, 64.9, 45],
         "AFTER_PICK_DRIVER2_2": ["R","J", 72.3, 14.6, -69.4, -26.1, 139.3, 63.5, 45],
         "BEFORE_PLACE_DRIVER2": ["R","J", 43.2, -1.6, -31.3, -49.1, 110.7, 59.1, 15],
-        "PLACE_DRIVER2": ["Y", "L", 234.69577, 44.756672, 46.316273, 92.170804, 6.639664, -1.443624, 10, "W"],
+        #"PLACE_DRIVER2": ["Y", "L", 234.69577, 44.756672, 46.316273, 92.170804, 6.639664, -1.443624, 10, "W"],
+        "PLACE_DRIVER2": ["Y", "L", 234.996155, 45.579674, 40.625122, 84.736218, 7.573815, 1.396527, 10, "W"],
         "AFTER_PLACE_DRIVER2": ["Y","L", 234.031128, 43.744728, 92.815109, 92.178023, 6.663041, -1.457261, 30, "W"],
         "BEFORE_PUSH_DRIVERS": ["Y", "J", 17.317535, -44.302586, -23.341556, 0.903096, 69.800755, 17.710928, 30],
         "SAFE_PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 40, "B"],
-        "PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 27.235741, 179.882678, 3.054667, 1.653728, 40, "B"],
+        "PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 28.235741, 179.882678, 3.054667, 1.653728, 40, "B"],
         "AFTER_PUSH_DRIVERS": ["Y","L", 248.399551, 7.757665, 48.735741, 179.882678, 3.054667, 1.653728, 40, "B"],
         
         "INSPECTION": ["Y", "J", 21.5, -63.1, -33.1, 0.2, 96.7, 21.5, 40],
@@ -254,6 +258,8 @@ class ElectronicsStation:
             self.current_state = "FINISH_ROUTINE"
   
         elif self.current_state == "FINISH_ROUTINE":
+            if not USE_PLC:
+                self.current_state = "HOME"
             self.plc_action_data = self.plc.db_read(1, 0, 2)
             #self.static_speech_feedback(self.current_state)
             self.send_arm_state(self.current_state)
@@ -313,18 +319,19 @@ class ElectronicsStation:
         lineal = self.ARM_STATES[state][1] == "L"
         print(f"Sending arm to state: {state}")
 
-        if light == "R":
-            self.plc_light_data = self.plc.db_read(2, 0, 2)
-            self.plc_light_data[0] = 0b00000010
-            self.plc.db_write(2,0, self.plc_light_data)
-        elif light == "Y":
-            self.plc_light_data = self.plc.db_read(2, 0, 2)
-            self.plc_light_data[0] = 0b00000100
-            self.plc.db_write(2,0, self.plc_light_data)
-        else:
-            self.plc_light_data = self.plc.db_read(2, 0, 2)
-            self.plc_light_data[0] = 0b00000001
-            self.plc.db_write(2,0, self.plc_light_data)
+        if USE_PLC:
+            if light == "R":
+                self.plc_light_data = self.plc.db_read(2, 0, 2)
+                self.plc_light_data[0] = 0b00000010
+                self.plc.db_write(2,0, self.plc_light_data)
+            elif light == "Y":
+                self.plc_light_data = self.plc.db_read(2, 0, 2)
+                self.plc_light_data[0] = 0b00000100
+                self.plc.db_write(2,0, self.plc_light_data)
+            else:
+                self.plc_light_data = self.plc.db_read(2, 0, 2)
+                self.plc_light_data[0] = 0b00000001
+                self.plc.db_write(2,0, self.plc_light_data)
 
         if lineal:
             tcp = self.ARM_STATES[state][9]
