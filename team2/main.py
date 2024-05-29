@@ -49,27 +49,25 @@ class ElectronicsStation:
     """Class to handle of components (arm, gripper, plc, etc) of the electronics station"""
     GRIPPER_STATES = {
         # [board, wire]
-        "HOME": [85, 0], #100
+        "HOME": [85, 0],
         "PICK_ARDUINO": [31, 0],
-        "PLACE_ARDUINO": [85, 0], #111
+        "PLACE_ARDUINO": [85, 0],
         "PICK_SHIELD": [42, 0],
-        "PLACE_SHIELD":[85, 0], #111
-        "PUSH_SHIELD": [85, 0], #111
-        "PICK_DRIVER1": [85, 37], #111
-        "PLACE_DRIVER1": [85, 0], #111
-        "PICK_DRIVER2": [85, 37], #111
+        "PLACE_SHIELD":[85, 0],
+        "PUSH_SHIELD": [85, 0],
+        "PICK_DRIVER1": [85, 37],
+        "PLACE_DRIVER1": [85, 0],
+        "PICK_DRIVER2": [85, 37],
         "PLACE_DRIVER2": [75, 0],
         "PUSH_DRIVERS": [75, 40],
         "PICK_ASSEMBLY": [42, 0],
         "PLACE_ASSEMBLY": [75, 0],
-        "SAFE_PICK_WIRE1": [35, 50],
-        "PICK_WIRE1": [35, 79],
-        "PLACE_WIRE1": [35, 50],
         "INSPECTION": [21, 40],
-        "FINISH_ROUTINE":[85, 40] #111
+        "FINISH_ROUTINE":[85, 40]
     }
+
     ARM_STATES = {
-        # [x, y, z, roll, pitch, yaw, speed]
+        # [LED, Movement Type, x, y, z, roll, pitch, yaw, speed, TCP]
         "HOME": ["G","J", 0, -70, -20, 0, 90, 0, 30],
         "BEFORE_PICK_ARDUINO": ["R","J", 84.4, -4.4, -17.2, -9.2, -19.4, 94.4, 50],
         "PICK_ARDUINO": ["Y","L", 11.4, 407.8, 164.2, -146.1, -0.8, 1.9, 40, "D"],
@@ -183,8 +181,10 @@ class ElectronicsStation:
         elif self.current_state == "WAIT_SENSOR":
             self.plc_action_data = self.plc.db_read(1, 0, 14)
             if self.plc_action_data[0] == 0b00000001:
-                time.sleep(2)
-                self.current_state = "BEFORE_PICK_ARDUINO"
+                time.sleep(3)
+                self.plc_action_data = self.plc.db_read(1, 0, 14)
+                if self.plc_action_data[0] == 0b00000001:
+                    self.current_state = "BEFORE_PICK_ARDUINO"
 
         elif self.current_state == "AFTER_PICK_ARDUINO":
             self.send_arm_state(self.current_state)
@@ -302,21 +302,23 @@ class ElectronicsStation:
 
     def send_arm_state(self, state, lineal=False):
         """Send the data to the xArm"""
+        # Obtain the single joint/coordinate values
         x, y, z, roll, pitch, yaw, speed = self.ARM_STATES[state][2:9]
         light = self.ARM_STATES[state][0] 
+        # Obtain type of movement
         lineal = self.ARM_STATES[state][1] == "L"
         print(f"Sending arm to state: {state}")
 
         if USE_PLC:
-            if light == "R":
+            if light == "R": # Red light
                 self.plc_light_data = self.plc.db_read(2, 0, 2)
                 self.plc_light_data[0] = 0b00000010
                 self.plc.db_write(2,0, self.plc_light_data)
-            elif light == "Y":
+            elif light == "Y": # Yellow light
                 self.plc_light_data = self.plc.db_read(2, 0, 2)
                 self.plc_light_data[0] = 0b00000100
                 self.plc.db_write(2,0, self.plc_light_data)
-            else:
+            else: # Green light
                 self.plc_light_data = self.plc.db_read(2, 0, 2)
                 self.plc_light_data[0] = 0b00000001
                 self.plc.db_write(2,0, self.plc_light_data)
@@ -336,17 +338,21 @@ class ElectronicsStation:
             self.arm.set_servo_angle(angle=[x, y, z, roll, pitch, yaw], speed=speed, wait=True)
 
     def static_speech_feedback(self, state):
-        """Play the static audio files with feedback"""
+        """Play the requested state's feedback"""
         if not USE_SPEECH:
             return
+        # Get the audio file path
         file_path = f"speech-feedback/{state}.opus"
+        # Play the audio in a new thread
         th = threading.Thread(target=self.speak_th, args=(file_path,))
         th.start()
+        # After the thread is started, the main execution continues
 
     def speak_th(self, filename):
         """Function to play the audio in a new thread"""
         pygame.mixer.music.load(filename)
         pygame.mixer.music.play()
+        # Wait until the audio is done playing
         while pygame.mixer.music.get_busy():
             pygame.time.Clock().tick(10)
 
