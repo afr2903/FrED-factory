@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Main script to run the electronics station assembly proccess
+Author: afr2903
 """
 # Constants for features being used
 USE_PLC = True
