@@ -67,6 +67,7 @@ void loop(){
         int len = udp.read(incoming_packet, 255);
         bool board_requested = false;
         if (len > 0){
+            // Check gripper requested
             if(incoming_packet[0] == 'b')
                 board_requested = true;
 
@@ -78,10 +79,12 @@ void loop(){
                 if (letter != ' ')
                     message += letter;
             }
+            // Convert the target position to integer
             int target_pos = message.toInt();
             Serial.printf("Target: %c%i\n", incoming_packet[0], target_pos);
             Serial.println();
 
+            // Set the target position
             if (board_requested){
                 board_target_pos = target_pos;
             } else {
@@ -90,7 +93,7 @@ void loop(){
         }
     }
 
-    // Set the current position to the target position with ramp
+    // Set the current position to the target position with steps
     if (wire_current_pos != wire_target_pos){
         if (wire_current_pos == -1)
             wire_current_pos = wire_target_pos - 1;
