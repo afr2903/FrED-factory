@@ -2,6 +2,8 @@
 
 Collaborative Robotics Challenge with MIT for the Manufacturing Systems Automation class.
 
+[Video demonstration of the class](https://www.youtube.com/watch?v=cmu7tWUShaI)
+
 ## Setup
 
 For easier multiplatform environment setup, a python `venv` will be created. In Windows, `Python 11` is being used. 
